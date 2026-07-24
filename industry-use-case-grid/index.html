@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lean Industry × Use Case × Product Grid</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff;--bg2:#F4F5F7;--bg3:#ECEDF1;
+  --border:#E3E4EA;--border2:#CACBD5;
+  --text:#1C2024;--text2:#60646C;--text3:#B9BBC6;
+  --green:#299764;--green-l:#EDF7F2;--green-d:#1F7A4E;--green-b:rgba(41,151,100,0.18);
+  --purple:#5b4fcf;--purple-l:#eeecfb;--purple-b:rgba(91,79,207,0.18);
+  --coral:#C62A2F;--coral-l:#FDF0F0;--coral-b:rgba(198,42,47,0.18);
+  --blue:#256E93;--blue-l:#EDF4F8;--blue-b:rgba(37,110,147,0.18);
+  --amber:#915930;--amber-l:#FBF6F1;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.03);
+  --shadow-md:0 4px 12px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.03);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg2);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;min-height:100vh}
+
+/* ── Header ── */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:56px;background:#ffffff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.hdr-left{display:flex;align-items:center;gap:14px}
+.rtoggle{display:flex;gap:2px;background:var(--bg3);border-radius:8px;padding:3px;border:1px solid var(--border)}
+.rbtn{padding:4px 14px;border-radius:6px;border:none;background:transparent;color:var(--text2);font-size:12px;font-family:'Inter',sans-serif;font-weight:500;cursor:pointer;transition:all .15s;line-height:1.2}
+.rbtn.on{background:var(--bg);color:var(--text);box-shadow:var(--shadow);font-weight:600}
+.rbtn:hover:not(.on){background:rgba(41,151,100,.08);color:var(--green-d)}
+
+/* ── Vertical selector ── */
+.vsec{padding:20px 24px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.vcard{background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:16px 18px;cursor:pointer;transition:all .2s}
+.vcard:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.vcard[data-v="lending"]:hover,.vcard.on[data-v="lending"]{border-color:var(--green);background:var(--green-l)}
+.vcard[data-v="trading"]:hover,.vcard.on[data-v="trading"]{border-color:var(--purple);background:var(--purple-l)}
+.vcard[data-v="remittance"]:hover,.vcard.on[data-v="remittance"]{border-color:var(--blue);background:var(--blue-l)}
+.vcard[data-v="lending"]:hover .vcard-num,.vcard[data-v="lending"]:hover .vcard-lbl,.vcard.on[data-v="lending"] .vcard-num,.vcard.on[data-v="lending"] .vcard-lbl{color:var(--green-d)}
+.vcard[data-v="trading"]:hover .vcard-num,.vcard[data-v="trading"]:hover .vcard-lbl,.vcard.on[data-v="trading"] .vcard-num,.vcard.on[data-v="trading"] .vcard-lbl{color:var(--purple)}
+.vcard[data-v="remittance"]:hover .vcard-num,.vcard[data-v="remittance"]:hover .vcard-lbl,.vcard.on[data-v="remittance"] .vcard-num,.vcard.on[data-v="remittance"] .vcard-lbl{color:var(--blue)}
+.vcard-num{font-weight:700;font-size:10px;letter-spacing:.08em;margin-bottom:8px;color:var(--text3);transition:color .2s}
+.vcard-lbl{font-weight:700;font-size:14px;color:var(--text);margin-bottom:3px;transition:color .2s}
+.vcard-sub{font-size:11px;color:var(--text3);line-height:1.4}
+
+/* ── View toggle row ── */
+.viewrow{padding:14px 24px 0;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.viewrow-legend{font-size:11px;color:var(--text3)}
+.viewrow-legend .lg-na{color:var(--coral);font-weight:600;text-decoration:line-through}
+.viewrow-legend .lg-ok{color:var(--text2);font-weight:600}
+
+/* ── Main grid ── */
+.wrap{display:grid;grid-template-columns:280px 1fr;height:calc(100vh - 230px);min-height:420px;margin-top:14px}
+.sb{background:var(--bg);border:1px solid var(--border);border-right:none;border-radius:12px 0 0 12px;overflow-y:auto;margin-left:24px}
+.sb::-webkit-scrollbar{width:3px}
+.sb::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.sb-hdr{padding:11px 14px 9px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg2);position:sticky;top:0;z-index:5}
+.sb-title{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text3)}
+.sb-count{font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace}
+.sb-group{padding:8px 14px 4px;font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);background:var(--bg);border-bottom:1px solid var(--border)}
+.ibt{width:100%;text-align:left;padding:9px 14px;border:none;background:transparent;color:var(--text);font-size:12px;font-family:'Inter',sans-serif;cursor:pointer;transition:all .12s;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px}
+.ibt:hover{background:var(--hl-l)}
+.ibt:hover .ibt-name{color:var(--hl-d)}
+.ibt.on{background:var(--hl-l);border-left:3px solid var(--hl);padding-left:11px}
+.idot{width:6px;height:6px;border-radius:50%;flex-shrink:0;transition:background .12s;background:var(--hl)}
+.ibt-name{flex:1;font-size:12px;line-height:1.35;transition:color .12s}
+.ibadge{font-size:9px;padding:2px 7px;border-radius:6px;font-weight:500;flex-shrink:0;letter-spacing:.02em;font-family:'JetBrains Mono',monospace}
+
+/* ── Detail panel ── */
+.det{background:var(--bg);border:1px solid var(--border);border-radius:0 12px 12px 0;overflow-y:auto;padding:24px 28px;margin-right:24px}
+.det::-webkit-scrollbar{width:3px}
+.det::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.empty-st{display:flex;flex-direction:column;align-items:center;justify-content:center;height:72%;color:var(--text3);gap:14px;text-align:center}
+.empty-ico{width:44px;height:44px;border-radius:10px;background:var(--green-l);display:flex;align-items:center;justify-content:center}
+.det-eyebrow{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px}
+.det-name{font-weight:700;font-size:21px;letter-spacing:-.02em;color:var(--text);margin-bottom:6px;line-height:1.2}
+.det-desc{font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:14px;max-width:620px}
+.metarow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.mbadge{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500;border:1px solid transparent}
+.tab-bar{display:flex;border-bottom:2px solid var(--border);margin-bottom:20px}
+.tab-btn{padding:8px 16px;border:none;background:transparent;font-size:12px;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;color:var(--text3);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .12s}
+.tab-btn:hover{color:var(--hl-d)}
+.tab-btn.on{color:var(--hl-d);border-bottom-color:var(--hl)}
+
+/* ── Category sections & use case cards ── */
+.chain{display:flex;flex-direction:column;gap:14px}
+.csec{border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.chdr{padding:10px 14px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.chlbl{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.chcnt{font-size:11px;color:var(--text3);margin-left:auto}
+.citems{padding:12px;display:flex;flex-wrap:wrap;gap:7px;background:var(--bg)}
+.uclist{display:flex;flex-direction:column}
+.uc-card{padding:14px;border-bottom:1px solid var(--border);background:var(--bg)}
+.uc-card:last-child{border-bottom:none}
+.uc-top{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap}
+.uc-name{font-size:13px;font-weight:600;color:var(--text);cursor:pointer}
+.uc-name:hover{color:var(--hl-d);text-decoration:underline}
+.uc-desc{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:10px;max-width:640px}
+.pgrid{display:flex;flex-direction:column;gap:6px}
+.prow{display:flex;gap:8px;align-items:flex-start}
+.pfam{flex-shrink:0;width:92px;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);padding-top:6px}
+.pchips{display:flex;flex-wrap:wrap;gap:5px}
+.pchip{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:8px;font-size:11px;font-weight:500;border:1px solid var(--border);background:var(--bg2);color:var(--text);cursor:pointer;transition:all .13s}
+.pchip:hover{border-color:var(--hl);background:var(--hl-l);color:var(--hl-d)}
+.rg{font-size:8px;font-weight:700;letter-spacing:.04em;padding:1.5px 5px;border-radius:4px;font-family:'JetBrains Mono',monospace}
+.rg-uae{background:var(--blue-l);color:var(--blue)}
+.rg-ksa{background:var(--amber-l);color:var(--amber)}
+.rg-na{background:var(--coral-l);color:var(--coral);text-decoration:line-through}
+.ctag{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:8px;font-size:12px;cursor:pointer;font-weight:500;transition:all .13s;border:1px solid transparent}
+.ctag:hover{filter:brightness(.93);transform:translateY(-1px);box-shadow:var(--shadow-md)}
+.ctag-dep{font-size:9px;font-weight:600;opacity:.65;letter-spacing:.03em}
+.nores{color:var(--text3);font-size:12px;padding:4px 0}
+
+/* ── Matrix ── */
+.mx-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px}
+.mx{border-collapse:collapse;font-size:11px;white-space:nowrap;width:100%}
+.mx thead th{padding:9px 8px;text-align:center;font-size:9px;font-weight:600;letter-spacing:.03em;color:var(--text3);border-bottom:2px solid var(--border);background:var(--bg2);text-transform:uppercase;user-select:none;max-width:110px;white-space:normal;vertical-align:bottom;line-height:1.3}
+.mx thead th.rh{text-align:left;position:sticky;left:0;background:var(--bg2);z-index:2;min-width:170px}
+.mx tbody td{padding:6px 8px;text-align:center;border-bottom:1px solid var(--border)}
+.mx tbody td.rh{text-align:left;position:sticky;left:0;background:var(--bg);font-size:12px;font-weight:500;padding:7px 14px;z-index:1;border-right:1px solid var(--border);white-space:normal;min-width:170px}
+.mx tbody tr:last-child td{border-bottom:none}
+.mx tbody tr:hover td{background:var(--hl-l)}
+.mx tbody tr:hover td.rh{background:var(--hl-l);color:var(--hl-d)}
+.mh{background:var(--green-l);color:var(--green-d);border-radius:4px;padding:2px 6px;font-weight:600;font-size:9px;font-family:'JetBrains Mono',monospace}
+.mna{background:var(--coral-l);color:var(--coral);border-radius:4px;padding:2px 6px;font-weight:600;font-size:9px;font-family:'JetBrains Mono',monospace;text-decoration:line-through}
+.me{color:var(--border2)}
+
+/* ── Colour helpers ── */
+.c-green{color:var(--green-d)}.c-purple{color:var(--purple)}.c-coral{color:var(--coral)}.c-blue{color:var(--blue)}.c-amber{color:var(--amber)}
+.bg-green{background:var(--green-l);border-color:var(--green-b);color:var(--green-d)}
+.bg-purple{background:var(--purple-l);border-color:var(--purple-b);color:var(--purple)}
+.bg-coral{background:var(--coral-l);border-color:var(--coral-b);color:var(--coral)}
+.bg-blue{background:var(--blue-l);border-color:var(--blue-b);color:var(--blue)}
+.bg-amber{background:var(--amber-l);border-color:rgba(217,119,6,.2);color:var(--amber)}
+.bg-gray{background:var(--bg3);border-color:var(--border2);color:var(--text2)}
+.t-green{color:var(--green-d)}.t-purple{color:var(--purple)}.t-coral{color:var(--coral)}.t-blue{color:var(--blue)}.t-amber{color:var(--amber)}
+
+@media(max-width:768px){
+  .vsec{grid-template-columns:1fr}
+  .wrap{grid-template-columns:1fr;height:auto}
+  .sb{margin-left:12px;max-height:260px;border-radius:12px 12px 0 0;border-right:1px solid var(--border);border-bottom:none}
+  .det{margin-right:12px;border-top:none;border-radius:0 0 12px 12px;margin-left:12px}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-left">
+    <div style="display:flex;align-items:center;gap:16px;">
+      <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzMxIiBoZWlnaHQ9IjEzNiIgdmlld0JveD0iMCAwIDMzMSAxMzYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0xMjguOSA1OS4wODU3TDEwOS4wNjEgMjQuOTE0M0MxMDcuNDc3IDIyLjIwMSAxMDUuMjAyIDE5Ljk0OSAxMDIuNDY2IDE4LjM4NDRDOTkuNzI4OSAxNi44MTk4IDk2LjYyNjIgMTUuOTk3NSA5My40Njg3IDE2SDUzLjgzNDdDNTAuNjczNCAxNS45OTM2IDQ3LjU2NiAxNi44MTQxIDQ0LjgyNTEgMTguMzc4OUM0Mi4wODQyIDE5Ljk0MzcgMzkuODA2MyAyMi4xOTc3IDM4LjIyMDQgMjQuOTE0M0wxOC4zODg0IDU5LjA4NTdDMTYuODIzNCA2MS43OTk0IDE2IDY0Ljg3MjUgMTYgNjhDMTYgNzEuMTI3NSAxNi44MjM0IDc0LjIwMDYgMTguMzg4NCA3Ni45MTQzTDM4LjIyMDQgMTExLjA4NkMzOS44MDQ0IDExMy43OTkgNDIuMDc4OCAxMTYuMDUxIDQ0LjgxNTQgMTE3LjYxNkM0Ny41NTIgMTE5LjE4IDUwLjY1NDcgMTIwLjAwMiA1My44MTIyIDEyMEg5My40NDYyQzk2LjYwMzggMTIwLjAwMiA5OS43MDY0IDExOS4xOCAxMDIuNDQzIDExNy42MTZDMTA1LjE4IDExNi4wNTEgMTA3LjQ1NCAxMTMuNzk5IDEwOS4wMzggMTExLjA4NkwxMjguOSA3Ni45MTQzQzEzMC40NjkgNzQuMjAxOCAxMzEuMjk0IDcxLjEyODIgMTMxLjI5NCA2OEMxMzEuMjk0IDY0Ljg3MTggMTMwLjQ2OSA2MS43OTgyIDEyOC45IDU5LjA4NTdaTTExMi43NTUgNzIuMjEySDEwOC40NzdDMTA3LjczNCA3Mi4yMTI0IDEwNy4wMDMgNzIuNDA2OCAxMDYuMzU5IDcyLjc3NThDMTA1LjcxNCA3My4xNDQ3IDEwNS4xNzkgNzMuNjc1MiAxMDQuODA1IDc0LjMxNDNMOTkuNzM1MyA4Mi45ODM0TDk0LjY5NTEgOTEuNjUyNkM5NC4zMjM3IDkyLjI5MzEgOTQuMTI4MiA5My4wMTk0IDk0LjEyODIgOTMuNzU4NkM5NC4xMjgyIDk0LjQ5NzggOTQuMzIzNyA5NS4yMjQgOTQuNjk1MSA5NS44NjQ2TDk2LjgzMzggOTkuNTQxN0M5Ny4zNDI5IDEwMC41MDUgOTcuNDU3MyAxMDEuNjI2IDk3LjE1MzEgMTAyLjY3Qzk2Ljg0ODkgMTAzLjcxNSA5Ni4xNDk2IDEwNC42MDMgOTUuMjAxNyAxMDUuMTQ3Qzk0LjI1MzggMTA1LjY5MSA5My4xMzA4IDEwNS44NSA5Mi4wNjc2IDEwNS41OUM5MS4wMDQ0IDEwNS4zMzEgOTAuMDgzNiAxMDQuNjczIDg5LjQ5NzggMTAzLjc1NEw4Ny4zNTkxIDEwMC4wNzdDODYuOTg4NiA5OS40MzQ2IDg2LjQ1MzggOTguOTAxMyA4NS44MDkgOTguNTMwOEM4NS4xNjQyIDk4LjE2MDMgODQuNDMyMiA5Ny45NjU4IDgzLjY4NzMgOTcuOTY2OUg2My41NjM3QzYyLjgxODggOTcuOTY1OCA2Mi4wODY4IDk4LjE2MDMgNjEuNDQyIDk4LjUzMDhDNjAuNzk3MiA5OC45MDEzIDYwLjI2MjQgOTkuNDM0NiA1OS44OTIgMTAwLjA3N0w1Ny43NTMyIDEwMy43NTRDNTcuNDg3NiAxMDQuMjU2IDU3LjEyMjUgMTA0LjcgNTYuNjc5OSAxMDUuMDU5QzU2LjIzNzMgMTA1LjQxOCA1NS43MjYzIDEwNS42ODQgNTUuMTc3NSAxMDUuODQxQzU0LjYyODcgMTA1Ljk5OSA1NC4wNTM1IDEwNi4wNDUgNTMuNDg2NSAxMDUuOTc2QzUyLjkxOTQgMTA1LjkwOCA1Mi4zNzIxIDEwNS43MjYgNTEuODc3NSAxMDUuNDQyQzUxLjM4MyAxMDUuMTU4IDUwLjk1MTIgMTA0Ljc3OCA1MC42MDgzIDEwNC4zMjRDNTAuMjY1MyAxMDMuODcgNTAuMDE4MyAxMDMuMzUyIDQ5Ljg4MTkgMTAyLjgwMUM0OS43NDU1IDEwMi4yNSA0OS43MjI2IDEwMS42NzcgNDkuODE0NiAxMDEuMTE3QzQ5LjkwNjYgMTAwLjU1NyA1MC4xMTE1IDEwMC4wMjEgNTAuNDE3MiA5OS41NDE3TDUyLjU1NTkgOTUuODY0NkM1Mi45MjczIDk1LjIyNCA1My4xMjI4IDk0LjQ5NzggNTMuMTIyOCA5My43NTg2QzUzLjEyMjggOTMuMDE5NCA1Mi45MjczIDkyLjI5MzEgNTIuNTU1OSA5MS42NTI2TDQ3LjUxNTcgODIuOTgzNEw0Mi40NzU0IDc0LjMxNDNDNDIuMTAyOCA3My42NzQ3IDQxLjU2NzQgNzMuMTQzOCA0MC45MjI5IDcyLjc3NDhDNDAuMjc4NCA3Mi40MDU4IDM5LjU0NzYgNzIuMjExNyAzOC44MDM3IDcyLjIxMkgzNC41MjYyQzMzLjQwMTcgNzIuMjEyIDMyLjMyMzIgNzEuNzY4MiAzMS41MjggNzAuOTc4M0MzMC43MzI4IDcwLjE4ODQgMzAuMjg2MSA2OS4xMTcxIDMwLjI4NjEgNjhDMzAuMjg2MSA2Ni44ODI5IDMwLjczMjggNjUuODExNiAzMS41MjggNjUuMDIxN0MzMi4zMjMyIDY0LjIzMTggMzMuNDAxNyA2My43ODggMzQuNTI2MiA2My43ODhIMzguODAzN0MzOS41NDc2IDYzLjc4ODQgNDAuMjc4NCA2My41OTQzIDQwLjkyMjkgNjMuMjI1M0M0MS41Njc0IDYyLjg1NjIgNDIuMTAyOCA2Mi4zMjUzIDQyLjQ3NTQgNjEuNjg1N0w0Ny41MTU3IDUzLjAxNjZMNTIuNTU1OSA0NC4zNDc1QzUyLjkyNzMgNDMuNzA2OSA1My4xMjI4IDQyLjk4MDcgNTMuMTIyOCA0Mi4yNDE1QzUzLjEyMjggNDEuNTAyMiA1Mi45MjczIDQwLjc3NiA1Mi41NTU5IDQwLjEzNTVMNTAuNDE3MiAzNi40MjEyQzUwLjExMTUgMzUuOTQxNyA0OS45MDY2IDM1LjQwNTkgNDkuODE0NiAzNC44NDU4QzQ5LjcyMjYgMzQuMjg1OCA0OS43NDU1IDMzLjcxMyA0OS44ODE5IDMzLjE2MTlDNTAuMDE4MyAzMi42MTA5IDUwLjI2NTMgMzIuMDkyOSA1MC42MDgzIDMxLjYzOUM1MC45NTEyIDMxLjE4NTIgNTEuMzgzIDMwLjgwNDkgNTEuODc3NSAzMC41MjA5QzUyLjM3MjEgMzAuMjM2OSA1Mi45MTk0IDMwLjA1NTIgNTMuNDg2NSAyOS45ODY1QzU0LjA1MzUgMjkuOTE3OSA1NC42Mjg3IDI5Ljk2MzggNTUuMTc3NSAzMC4xMjE1QzU1LjcyNjMgMzAuMjc5MSA1Ni4yMzczIDMwLjU0NTMgNTYuNjc5OSAzMC45MDQxQzU3LjEyMjUgMzEuMjYyOSA1Ny40ODc2IDMxLjcwNjggNTcuNzUzMiAzMi4yMDkyTDU5Ljg5MiAzNS44ODYzQzYwLjI2MjQgMzYuNTI4MyA2MC43OTcyIDM3LjA2MTYgNjEuNDQyIDM3LjQzMjFDNjIuMDg2OCAzNy44MDI2IDYyLjgxODggMzcuOTk3MSA2My41NjM3IDM3Ljk5Nkg4My43MTcyQzg0LjQ2MjEgMzcuOTk3MSA4NS4xOTQxIDM3LjgwMjYgODUuODM4OSAzNy40MzIxQzg2LjQ4MzcgMzcuMDYxNiA4Ny4wMTg1IDM2LjUyODMgODcuMzg5IDM1Ljg4NjNMODkuNTI3NyAzMi4yMDkyQzkwLjExMzUgMzEuMjkwNCA5MS4wMzQzIDMwLjYzMjIgOTIuMDk3NSAzMC4zNzI2QzkzLjE2MDcgMzAuMTEyOSA5NC4yODM3IDMwLjI3MTggOTUuMjMxNiAzMC44MTZDOTYuMTc5NSAzMS4zNjAzIDk2Ljg3ODggMzIuMjQ3NyA5Ny4xODMgMzMuMjkyNEM5Ny40ODcyIDM0LjMzNzIgOTcuMzcyOCAzNS40NTgzIDk2Ljg2MzcgMzYuNDIxMkw5NC43MjUgNDAuMTM1NUM5NC4zNTM2IDQwLjc3NiA5NC4xNTgxIDQxLjUwMjIgOTQuMTU4MSA0Mi4yNDE1Qzk0LjE1ODEgNDIuOTgwNyA5NC4zNTM2IDQzLjcwNjkgOTQuNzI1IDQ0LjM0NzVMOTkuNzM1MyA1My4wMTY2TDEwNC43NzYgNjEuNjg1N0MxMDUuMTQ5IDYyLjMyNDggMTA1LjY4NCA2Mi44NTUzIDEwNi4zMjkgNjMuMjI0M0MxMDYuOTczIDYzLjU5MzIgMTA3LjcwNCA2My43ODc2IDEwOC40NDcgNjMuNzg4SDExMi43MjVDMTEzLjg0OSA2My43ODggMTE0LjkyOCA2NC4yMzE4IDExNS43MjMgNjUuMDIxN0MxMTYuNTE4IDY1LjgxMTYgMTE2Ljk2NSA2Ni44ODI5IDExNi45NjUgNjhDMTE2Ljk2NSA2OS4xMTcxIDExNi41MTggNzAuMTg4NCAxMTUuNzIzIDcwLjk3ODNDMTE0LjkyOCA3MS43NjgyIDExMy44NDkgNzIuMjEyIDExMi43MjUgNzIuMjEySDExMi43NTVaIiBmaWxsPSIjMUMyMDI0IiBzdHlsZT0iZmlsbDojMUMyMDI0O2ZpbGw6Y29sb3IoZGlzcGxheS1wMyAwLjEwOTggMC4xMjU1IDAuMTQxMik7ZmlsbC1vcGFjaXR5OjE7Ii8+CjxwYXRoIGQ9Ik0yMDkuODggMjkuODg5OUMyMTAuMjIgMzAuMjA5OSAyMTAuNjMgMzAuNDU5OSAyMTEuMDcgMzAuNjE5OUMyMTEuNDcgMzAuNzY5OSAyMTEuODggMzAuODM5OSAyMTIuMjkgMzAuODM5OUMyMTIuMzQgMzAuODM5OSAyMTIuNCAzMC44Mzk5IDIxMi40NSAzMC44Mzk5SDIxMi40NkMyMTMuNjEgMzAuODM5OSAyMTQuNSAzMC41Mjk5IDIxNS4wOSAyOS45Mjk5QzIxNS42OCAyOS4zMjk5IDIxNS45OCAyOC40Mjk5IDIxNS45OCAyNy4yNzk5QzIxNiAyNi44MDk5IDIxNS45MyAyNi4zNDk5IDIxNS43NyAyNS45MDk5QzIxNS42MSAyNS40Nzk5IDIxNS4zNiAyNS4wODk5IDIxNS4wMSAyNC43MTk5QzIxNC42NyAyNC4zOTk5IDIxNC4yNyAyNC4xNTk5IDIxMy44MyAyMy45OTk5QzIxMy4zOSAyMy44Mzk5IDIxMi45MyAyMy43Njk5IDIxMi40NyAyMy43ODk5QzIxMS45OSAyMy43Njk5IDIxMS41MiAyMy44Mzk5IDIxMS4wNyAyNC4wMDk5QzIxMC42MiAyNC4xNjk5IDIxMC4yMiAyNC40MTk5IDIwOS44NSAyNC43Njk5QzIwOS41MiAyNS4wOTk5IDIwOS4yNyAyNS40ODk5IDIwOS4xMSAyNS45MTk5QzIwOC45NCAyNi4zNTk5IDIwOC44NyAyNi44MDk5IDIwOC44OSAyNy4yNDk5QzIwOC44NiAyNy43Mjk5IDIwOC45NCAyOC4xOTk5IDIwOS4xIDI4LjY0OTlDMjA5LjI3IDI5LjA5OTkgMjA5LjUyIDI5LjQ5OTkgMjA5Ljg4IDI5Ljg3OTlWMjkuODg5OVoiIGZpbGw9IiMxQzIwMjQiIHN0eWxlPSJmaWxsOiMxQzIwMjQ7ZmlsbDpjb2xvcihkaXNwbGF5LXAzIDAuMTA5OCAwLjEyNTUgMC4xNDEyKTtmaWxsLW9wYWNpdHk6MTsiLz4KPHBhdGggZD0iTTI4My45MSAyMC4wMTk5TDI4MC4zMyAyMS44OTk5QzI3OS40MiAyMi4zNzk5IDI3OC42NiAyMy4wODk5IDI3OC4xNCAyMy45NTk5QzI3Ny42MSAyNC44Mjk5IDI3Ny4zMyAyNS44MTk5IDI3Ny4zNCAyNi44Mzk5VjQxLjY2OTlDMjc3LjM0IDQzLjEzOTkgMjc3LjA0IDQ0LjE4OTkgMjc2LjQ2IDQ0Ljc3OTlDMjc1Ljg3IDQ1LjM2OTkgMjc0Ljg1IDQ1LjY2OTkgMjczLjQyIDQ1LjY2OTlIMjYwLjExQzI1OC45NCA0NS42Njk5IDI1OC4xMSA0NS40Mjk5IDI1Ny42NCA0NC45NDk5QzI1Ny4xNyA0NC40Njk5IDI1Ni45NCA0My42Mjk5IDI1Ni45NCA0Mi40NDk5VjMxLjQ3OTlDMjU2Ljk0IDMxLjM1OTkgMjU2LjgyIDMxLjI4OTkgMjU2LjcxIDMxLjMzOTlMMjUzLjA5IDMzLjI0OTlDMjUyLjE4IDMzLjcyOTkgMjUxLjQyIDM0LjQzOTkgMjUwLjg5IDM1LjMwOTlDMjUwLjM2IDM2LjE3OTkgMjUwLjA4IDM3LjE3OTkgMjUwLjA4IDM4LjE4OTlWNDIuNDY5OUMyNTAuMDggNDMuNjQ5OSAyNDkuODQgNDQuNDg5OSAyNDkuMzcgNDQuOTY5OUMyNDguOSA0NS40NDk5IDI0OC4wOCA0NS42ODk5IDI0Ni45MSA0NS42ODk5SDIzMi4yNkMyMzEuMDkgNDUuNjg5OSAyMzAuMjYgNDUuNDQ5OSAyMjkuOCA0NC45Njk5QzIyOS4zMyA0NC40ODk5IDIyOS4wOSA0My42NDk5IDIyOS4wOSA0Mi40Njk5VjMxLjQ3OTlDMjI5LjA5IDMxLjM1OTkgMjI4Ljk2IDMxLjI4OTkgMjI4Ljg2IDMxLjMzOTlMMjI1LjI1IDMzLjI0OTlDMjI0LjM0IDMzLjcyOTkgMjIzLjU4IDM0LjQzOTkgMjIzLjA2IDM1LjMwOTlDMjIyLjUzIDM2LjE3OTkgMjIyLjI1IDM3LjE2OTkgMjIyLjI1IDM4LjE4OTlWNDguNzc5OUMyMjIuMyA0OS42MTk5IDIyMi4xNyA1MC40NDk5IDIyMS44NSA1MS4yMjk5QzIyMS41MyA1Mi4wMTk5IDIyMS4wNiA1Mi45Mjk5IDIyMC40NCA1My41MDk5QzIxOS4yMSA1NC41ODk5IDIxNi41IDU1LjM2OTkgMjEyLjc2IDU1LjM2OTlDMjA5Ljc0IDU1LjM2OTkgMjA4LjM5IDU1LjI3OTkgMjA2Ljk1IDU0LjY5OTlDMjA2LjA2IDU0LjM0OTkgMjA1LjEzIDUzLjYzOTkgMjA0LjQ5IDUyLjk0OTlDMjAzLjA3IDUxLjM0OTkgMjAyLjMzIDQ5LjE3OTkgMjAyLjQzIDQ3LjAxOTlDMjAyLjQzIDQ0Ljk3OTkgMjAyLjkzIDQyLjk0OTkgMjAzLjg2IDQxLjEyOTlDMjAzLjg2IDQxLjEyOTkgMjA0LjU2IDM5Ljc0OTkgMjA0LjU4IDM5LjcxOTlDMjA0LjU5IDM5LjY4OTkgMjA0LjU4IDM5LjY1OTkgMjA0LjU1IDM5LjY2OTlDMjA0LjU1IDM5LjY2OTkgMjAwLjA5IDQwLjU1OTkgMTk5LjU0IDQwLjY4OTlDMTk4Ljk0IDQwLjgzOTkgMTk4LjQ5IDQxLjAyOTkgMTk4LjA5IDQxLjMzOTlDMTk3LjY5IDQxLjY0OTkgMTk3LjM3IDQyLjA1OTkgMTk3LjE0IDQyLjUyOTlDMTk2LjM1IDQ0LjI2OTkgMTk1Ljk3IDQ2LjEwOTkgMTk2IDQ3Ljk5OTlDMTk1LjkzIDUxLjEyOTkgMTk2Ljk4IDU0LjIwOTkgMTk4Ljk0IDU2LjY3OTlDMjAxLjQ0IDU5LjgyOTkgMjA0LjYyIDYxLjEyOTkgMjA4LjI0IDYxLjM5OTlDMjA5LjMyIDYxLjQ3OTkgMjE1Ljc2IDYxLjU2OTkgMjE3Ljc2IDYxLjI5OTlDMjIwLjg2IDYwLjg4OTkgMjIyLjM4IDU5Ljk4OTkgMjIzLjg3IDU5LjAzOTlDMjI1LjE2IDU4LjE1OTkgMjI2LjI1IDU3LjA0OTkgMjI3LjEgNTUuNzQ5OUMyMjcuODkgNTQuNTM5OSAyMjguNDQgNTMuMjE5OSAyMjguNzMgNTEuODE5OUMyMjguNzMgNTEuODE5OSAyMjguNzQgNTEuODA5OSAyMjguNzUgNTEuODA5OUMyMjkuNjggNTIuMDU5OSAyMzAuNjkgNTIuMTg5OSAyMzEuNjEgNTIuMTY5OUgyNDcuNDdDMjQ5LjYzIDUyLjI0OTkgMjUxLjc0IDUxLjU5OTkgMjUzLjQ3IDUwLjM0OTlDMjUzLjQ3IDUwLjM0OTkgMjUzLjQ4IDUwLjM0OTkgMjUzLjQ5IDUwLjM0OTlDMjU1LjIyIDUxLjU5OTkgMjU3LjM0IDUyLjIzOTkgMjU5LjQ4IDUyLjE2OTlIMjczLjc2QzI3Ni44IDUyLjE2OTkgMjc5LjI3IDUxLjI2OTkgMjgxLjExIDQ5LjQ5OTlDMjgzLjExIDQ3LjU1OTkgMjg0LjEzIDQ0LjkzOTkgMjg0LjEzIDQxLjcxOTlWMjAuMTU5OUMyODQuMTMgMjAuMDM5OSAyODQgMTkuOTU5OSAyODMuODkgMjAuMDE5OUgyODMuOTFaIiBmaWxsPSIjMUMyMDI0IiBzdHlsZT0iZmlsbDojMUMyMDI0O2ZpbGw6Y29sb3IoZGlzcGxheS1wMyAwLjEwOTggMC4xMjU1IDAuMTQxMik7ZmlsbC1vcGFjaXR5OjE7Ii8+CjxwYXRoIGQ9Ik0yNTcuNDUgNTYuOTM5OUMyNTcuMTIgNTYuNjA5OSAyNTYuNyA1Ni4zNDk5IDI1Ni4yNiA1Ni4xODk5QzI1NS44MiA1Ni4wMjk5IDI1NS4zNCA1NS45Njk5IDI1NC44NyA1NS45OTk5SDI0Ny4yNUMyNDYuMDggNTUuOTk5OSAyNDUuMTkgNTYuMjg5OSAyNDQuNTggNTYuODc5OUMyNDMuOTggNTcuNDU5OSAyNDMuNjcgNTguMzM5OSAyNDMuNjcgNTkuNDI5OVY1OS40NTk5QzI0My42NCA1OS45Mzk5IDI0My43MiA2MC40MDk5IDI0My44OCA2MC44NTk5QzI0NC4wNCA2MS4zMDk5IDI0NC4yOSA2MS43MDk5IDI0NC42NiA2Mi4wOTk5QzI0NSA2Mi40MTk5IDI0NS40MSA2Mi42Njk5IDI0NS44NSA2Mi44Mjk5QzI0Ni4yNCA2Mi45Nzk5IDI0Ni42NiA2My4wNDk5IDI0Ny4wNyA2My4wNDk5QzI0Ny4xMyA2My4wNDk5IDI0Ny4xOSA2My4wNDk5IDI0Ny4yNCA2My4wNDk5SDI1NC44N0MyNTYuMDIgNjMuMDQ5OSAyNTYuOTEgNjIuNzQ5OSAyNTcuNSA2Mi4xMzk5QzI1OC4wOSA2MS41Mzk5IDI1OC4zOSA2MC42Mzk5IDI1OC4zOSA1OS40OTk5QzI1OC40MyA1OS4wMjk5IDI1OC4zNiA1OC41NTk5IDI1OC4yIDU4LjExOTlDMjU4LjA0IDU3LjY3OTkgMjU3Ljc3IDU3LjI3OTkgMjU3LjQ0IDU2Ljk0OTlMMjU3LjQ1IDU2LjkzOTlaIiBmaWxsPSIjMUMyMDI0IiBzdHlsZT0iZmlsbDojMUMyMDI0O2ZpbGw6Y29sb3IoZGlzcGxheS1wMyAwLjEwOTggMC4xMjU1IDAuMTQxMik7ZmlsbC1vcGFjaXR5OjE7Ii8+CjxwYXRoIGQ9Ik0xNjguNjk0IDgzLjc2NDdIMTcyLjgxNFYxMDkuMjI0SDE5MC42NTdWMTE1LjI5NEgxNjUuMTc2Vjg3LjI1MDZDMTY1LjE3NiA4Ni4zMjYxIDE2NS41NDcgODUuNDM5NCAxNjYuMjA3IDg0Ljc4NTdDMTY2Ljg2NiA4NC4xMzIgMTY3Ljc2MSA4My43NjQ3IDE2OC42OTQgODMuNzY0N1oiIGZpbGw9IiMxQzIwMjQiIHN0eWxlPSJmaWxsOiMxQzIwMjQ7ZmlsbDpjb2xvcihkaXNwbGF5LXAzIDAuMTA5OCAwLjEyNTUgMC4xNDEyKTtmaWxsLW9wYWNpdHk6MTsiLz4KPHBhdGggZD0iTTIyNS4yODMgMTAxLjk1NUgyMDguOTIxVjEwOS4yMjhIMjI3Ljk1NFYxMTUuMjk0SDIwMS4yODRWODcuMjUwNkMyMDEuMjg0IDg2LjMyNjEgMjAxLjY1NSA4NS40Mzk0IDIwMi4zMTQgODQuNzg1N0MyMDIuOTc0IDg0LjEzMiAyMDMuODY5IDgzLjc2NDcgMjA0LjgwMSA4My43NjQ3SDIyNy42N1Y4OC4wODk5QzIyNy42NzEgODguMzE4NyAyMjcuNjI1IDg4LjU0NTMgMjI3LjUzNyA4OC43NTY4QzIyNy40NDkgODguOTY4MiAyMjcuMzIgODkuMTYwNCAyMjcuMTU3IDg5LjMyMjFDMjI2Ljk5MyA4OS40ODM5IDIyNi44IDg5LjYxMjEgMjI2LjU4NiA4OS42OTk0QzIyNi4zNzMgODkuNzg2NyAyMjYuMTQ0IDg5LjgzMTQgMjI1LjkxMyA4OS44MzA5SDIwOC45MjFWOTUuODg5M0gyMjUuMjgzVjEwMS45NTVaIiBmaWxsPSIjMUMyMDI0IiBzdHlsZT0iZmlsbDojMUMyMDI0O2ZpbGw6Y29sb3IoZGlzcGxheS1wMyAwLjEwOTggMC4xMjU1IDAuMTQxMik7ZmlsbC1vcGFjaXR5OjE7Ii8+CjxwYXRoIGQ9Ik0yNDguMzY1IDEwOC4wNzZMMjQ1LjU1MSAxMTUuMjk0SDIzNy42ODZMMjQ5LjY0NyA4NS45NDY4QzI0OS45MDggODUuMzAyNCAyNTAuMzU4IDg0Ljc1MDEgMjUwLjkzOSA4NC4zNjEyQzI1MS41MiA4My45NzIzIDI1Mi4yMDUgODMuNzY0NiAyNTIuOTA3IDgzLjc2NDdIMjYwLjMyNkwyNzMuODI4IDExNS4yOTRIMjY1LjU1TDI2Mi41NTMgMTA4LjA3NkgyNDguMzY1Wk0yNjAuNDI1IDEwMi4wMDZDMjU3LjQzNiA5NC43NDE2IDI1NS45ODYgOTEuMDQ4OCAyNTUuMjIxIDg4LjY0NDJIMjU1LjE3OEMyNTQuNDY4IDkwLjk4NjQgMjUyLjc2NSA5NS44MDczIDI1MC4zNDggMTAyLjAwNkgyNjAuNDI1WiIgZmlsbD0iIzFDMjAyNCIgc3R5bGU9ImZpbGw6IzFDMjAyNDtmaWxsOmNvbG9yKGRpc3BsYXktcDMgMC4xMDk4IDAuMTI1NSAwLjE0MTIpO2ZpbGwtb3BhY2l0eToxOyIvPgo8cGF0aCBkPSJNMjg0LjMxNCAxMTUuMjk0VjgzLjc2NDdIMjkxLjQ2M0MyOTIuMDQ0IDgzLjc2NjIgMjkyLjYxNiA4My45MDk0IDI5My4xMjggODQuMTgxN0MyOTMuNjQxIDg0LjQ1NCAyOTQuMDc4IDg0Ljg0NyAyOTQuNDAxIDg1LjMyNjJDMzAyLjU0NiA5Ny41OTEzIDMwNi4wNjggMTAyLjQ1OSAzMDcuOTc4IDEwNi4wNDZIMzA4LjA2OEMzMDcuNzU3IDEwMi43MTcgMzA3LjgwNSA5Ni44Mzc5IDMwNy44MDUgOTEuNjUzOVY4My43NjQ3SDMxNC44MjRWMTE1LjI5NEgzMDguMjVDMzA3LjY2IDExNS4yOTUgMzA3LjA3OSAxMTUuMTQ5IDMwNi41NjEgMTE0Ljg2OUMzMDYuMDQzIDExNC41ODggMzA1LjYwNSAxMTQuMTgzIDMwNS4yODggMTEzLjY5QzMwMS40MzIgMTA3LjcyNSAyOTIuODYxIDk0LjUxNTIgMjkxLjE0IDkxLjI0NzlIMjkxLjA0OUMyOTEuMzEzIDk1LjE1MTUgMjkxLjMxMyA5OS42MjkgMjkxLjMxMyAxMDUuMjI3VjExNS4yOTRIMjg0LjMxNFoiIGZpbGw9IiMxQzIwMjQiIHN0eWxlPSJmaWxsOiMxQzIwMjQ7ZmlsbDpjb2xvcihkaXNwbGF5LXAzIDAuMTA5OCAwLjEyNTUgMC4xNDEyKTtmaWxsLW9wYWNpdHk6MTsiLz4KPC9zdmc+Cg==" alt="Lean" style="height:26px;width:auto;display:block;">
+      <div style="width:1px;height:20px;background:var(--border);flex-shrink:0;"></div>
+      <div style="font-size:12px;font-weight:600;color:var(--text2);letter-spacing:.02em;">Industry × Use Case × Product Grid</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <span style="font-size:11px;font-weight:500;color:var(--text3)">Region</span>
+    <div class="rtoggle">
+      <button class="rbtn on" data-r="Both">All markets</button>
+      <button class="rbtn" data-r="UAE">UAE</button>
+      <button class="rbtn" data-r="KSA">KSA</button>
+    </div>
+  </div>
+</div>
+
+<div class="vsec" id="vsec"></div>
+
+<div class="viewrow">
+  <div class="rtoggle" id="viewtoggle">
+    <button class="rbtn on" data-view="industry">Sub-Industry view</button>
+    <button class="rbtn" data-view="usecase">Use Case view</button>
+    <button class="rbtn" data-view="product">Product view</button>
+  </div>
+  <div class="viewrow-legend"><span class="rg rg-uae">UAE</span> <span class="rg rg-ksa">KSA</span> tags show which market a product applies to &nbsp;·&nbsp; <span class="rg rg-na">UAE</span> = product not currently available in that market</div>
+</div>
+
+<div class="wrap">
+  <div class="sb" id="sb"></div>
+  <div class="det" id="det"></div>
+</div>
+
+<script>
+const DB={"verticals":[{"id":"lending","name":"Lending & Insurance","sub":"BNPL, personal & SME loans, mortgages, insurance"},{"id":"trading","name":"Trading & Gaming","sub":"Brokerages, crypto, wealth, payments, iGaming"},{"id":"remittance","name":"Remittance","sub":"Exchange houses, digital remittance, wallets, payouts"}],"subs":[{"id":"le_bnpl","v":"lending","name":"BNPL","desc":"A lending platform that offers customers flexible payment options for retail purchases.","ex":"Tabby, Tamara"},{"id":"le_rnpl","v":"lending","name":"RNPL","desc":"A lending platform specialized in providing rental loans","ex":"Agar"},{"id":"le_personal_cash_loans","v":"lending","name":"Personal / Cash Loans","desc":"A lending company that offers cash loans to individuals","ex":"Tamam"},{"id":"le_sme_financing","v":"lending","name":"SME Financing","desc":"A lending company that offers cash loans to businesses","ex":"Tamweel"},{"id":"le_revenue_based_financing","v":"lending","name":"Revenue-Based Financing","desc":"A lending company that offers loans based on business revenues","ex":"Tamweel"},{"id":"le_mortgage_provider","v":"lending","name":"Mortgage provider","desc":"A lending company that provides home loans to individuals","ex":"Huspy"},{"id":"le_mortgage_broker","v":"lending","name":"Mortgage broker","desc":"An intermediary that matches applicants to suitable home loan products.","ex":null},{"id":"le_medical_loans","v":"lending","name":"Medical Loans","desc":"Specialized providers enabling patients to cover healthcare expenses.","ex":null},{"id":"le_automobile_loans","v":"lending","name":"Automobile Loans","desc":"Automobile financing for new and used vehicles.","ex":null},{"id":"le_social_savings","v":"lending","name":"Social Savings","desc":"A lending company that creates savings circles to crowd source funds for loans to individuals","ex":"Circlys"},{"id":"le_p2p_lending","v":"lending","name":"P2P Lending","desc":"Peer-to-peer personal lending platform","ex":"Moneymoon"},{"id":"le_digital_bank","v":"lending","name":"Digital Bank","desc":"Online bank that provides loans through digital channels without relying on traditional networks.","ex":"STC Bank"},{"id":"le_loan_aggregator_marketplace","v":"lending","name":"Loan Aggregator/ Marketplace","desc":"Marketplace to compare and apply for loan products across multiple lenders","ex":"Tameeni"},{"id":"le_insurance_broker","v":"lending","name":"Insurance Broker","desc":"Intermediary that sells and advises on policies from multiple insurers on behalf of the customer (individuals or businesses).","ex":"(Al Mamoon)"},{"id":"le_insurance_provider","v":"lending","name":"Insurance Provider","desc":"Financial institution that provides insurance policies to individuals and businesses. They are the one underwriting the insurance policies.","ex":"Tawuniya"},{"id":"le_insurance_aggregator","v":"lending","name":"Insurance Aggregator","desc":"Marketplace to compare and purchase insurance policies across multiple providers","ex":"Tameeni"},{"id":"le_tpas","v":"lending","name":"TPAs","desc":"provides administrative services on behalf of an insurance company. TPAs do not underwrite insurance policies or assume financial risk; that manages claims processing and policy servicing on behalf of insurers","ex":"GlobeMed"},{"id":"tr_trading_brokerages_cfds_with_leverage","v":"trading","name":"Trading, Brokerages & CFDs (with leverage)","desc":"Actively trading stocks and assets WITH leverage options. High-risk/high-reward, with margin requirements and stricter regulatory scrutiny.","ex":"Capital.com"},{"id":"tr_trading_brokerages_cfds_without_leverage","v":"trading","name":"Trading, Brokerages & CFDs (without leverage)","desc":"Buying and selling stocks and assets WITHOUT leverage. Lower regulatory complexity than CFDs but same core payment and verification needs.","ex":"Baraka"},{"id":"tr_gold_trading","v":"trading","name":"Gold Trading","desc":"Buy, sell, and hold gold, physically backed or digital. Often used as a savings vehicle in the UAE.","ex":"O Gold"},{"id":"tr_robo_advisory_wealth_management","v":"trading","name":"Robo Advisory & Wealth Management","desc":"Manages investments on behalf of the customer based on their risk appetite. Customers deposit, and the platform invests for them, no active trading required.","ex":"Sarwa"},{"id":"tr_crypto","v":"trading","name":"Crypto","desc":"Crypto buying, selling, and trading. Must comply with VARA and CBUAE rules; identity, address, and source-of-funds checks are mandatory.","ex":"Binance"},{"id":"tr_crowdfunding","v":"trading","name":"Crowdfunding","desc":"Connecting investors to early-stage businesses, allowing crowd-sourced SME financing. Has two customer types: investors (pay in) and SMEs (receive funds).","ex":"Beehive"},{"id":"tr_payment_aggregator","v":"trading","name":"Payment Aggregator","desc":"A licensed entity (PI licensed) that settles payments on behalf of merchants, they hold and disburse the money, unlike a bank or a pure tech provider.","ex":"Checkout.com"},{"id":"tr_ptdp","v":"trading","name":"PTDP","desc":"A technical payment provider that processes and routes transactions but relies on banks for settlement. Does not hold money; limited Lean touchpoints.","ex":"Network International"},{"id":"tr_payment_orchestrator","v":"trading","name":"Payment Orchestrator","desc":"An intermediary that connects businesses to multiple payment providers through one integration, routing transactions to the best available channel.","ex":"Praxis"},{"id":"tr_pos_provider","v":"trading","name":"POS Provider","desc":"Supplies physical point-of-sale terminals to merchants for in-store card and digital payments.","ex":"Network International"},{"id":"tr_igaming","v":"trading","name":"iGaming","desc":"Online gaming, lottery, and betting platforms that handle wallet top-ups, ticket purchases, and winnings payouts. Regulated in the UAE; a licence is required.","ex":"UAE National Lottery"},{"id":"tr_esports","v":"trading","name":"Esports","desc":"Competitive video gaming involving professional players, teams, and tournaments with prize money. Payment needs focus on player verification and prize disbursements.","ex":"Yalla Esports"},{"id":"tr_streaming_platforms","v":"trading","name":"Streaming Platforms","desc":"Digital platforms for on-demand video, audio, or live content with creator monetization; subscriptions, tips, and ad revenue. Payments focus on creator payouts and subscriber billing.","ex":"Twitch"},{"id":"re_domestic_exchange_house","v":"remittance","name":"Domestic Exchange House","desc":"A traditional brick and mortar exchange house with an online platform that offers cross border remittances","ex":"Al Ansari"},{"id":"re_domestic_digital_remittance_platform","v":"remittance","name":"Domestic Digital Remittance Platform","desc":"A fully digital cross border remittance services platform","ex":"Taptap Send"},{"id":"re_digital_wallet_open_loop","v":"remittance","name":"Digital Wallet - Open Loop","desc":"A digital wallet that enables wallet topups AND withdrawals","ex":"CareemPAY"},{"id":"re_digital_wallet_closed_loop","v":"remittance","name":"Digital Wallet - Closed Loop","desc":"A digital wallet that only allows wallet topups (funds are locked in once topped up)","ex":"Blue by AF"},{"id":"re_international_remittance_platforms","v":"remittance","name":"International Remittance Platforms","desc":"A digital cross border remittance platform that doesn't have a local UAE or KSA entity.","ex":"Wise"},{"id":"re_mto_money_transfer_operator","v":"remittance","name":"MTO (Money Transfer Operator)","desc":"Specialized digital remittance companies with global corridor networks facilitating high-volume cross-border fund transfers to diaspora populations and international recipients.","ex":"MoneyGram"},{"id":"re_bank_led_remittance","v":"remittance","name":"Bank-led Remittance","desc":"Bank offering cross-border transfers to retail or business customers.","ex":"D360"},{"id":"re_payroll_salary_transfer","v":"remittance","name":"Payroll & Salary Transfer","desc":"Payroll platform or employer solution that pays salaries and supports worker remittances.","ex":null},{"id":"re_b2b_cross_border_payments","v":"remittance","name":"B2B Cross-border Payments","desc":"Provider enabling businesses to pay overseas suppliers, vendors or group entities.","ex":"Moneymoon"},{"id":"re_freelancer_contractor_payouts","v":"remittance","name":"Freelancer / Contractor Payouts","desc":"Platform that pays freelancers and contractors across borders.","ex":"STC Bank"},{"id":"re_marketplace_gig_payouts","v":"remittance","name":"Marketplace / Gig Payouts","desc":"Marketplace or gig platform distributing earnings to sellers, drivers or creators.","ex":"Salla"},{"id":"re_travel_money_fx_app","v":"remittance","name":"Travel Money / FX App","desc":"Multi-currency wallet or FX service used for travel spending and international transfers.","ex":null},{"id":"re_crypto_exchange_on_off_ramp_platform","v":"remittance","name":"Crypto Exchange / On-Off Ramp Platform","desc":"VARA-licensed crypto exchanges enabling stablecoin remittances with direct AED settlement to beneficiary bank accounts.","ex":"Rain"}],"ucs":[{"id":"le_pre_qualification","v":"lending","name":"Pre-qualification","cat":"Credit & Underwriting","prio":"Primary","desc":"Real-time affordability check: Lean\u2019s Open Banking solution offers lenders the ability to gain clear information in Income information along with all the expenditure over a set time period.","prods":[{"n":"Essential Data: Retail","g":"Data","rg":{"UAE":1,"KSA":1}},{"n":"Silver Data: Retail","g":"Data","rg":{"UAE":1,"KSA":1}},{"n":"Gold Data: Retail","g":"Data","rg":{"UAE":2,"KSA":2}},{"n":"Essential Data: Corporate","g":"Data","rg":{"UAE":2,"KSA":1}},{"n":"Silver Data: Corporate","g":"Data","rg":{"UAE":2,"KSA":1}},{"n":"Gold Data: Corporate","g":"Data","rg":{"UAE":2,"KSA":2}}],"subs":["le_rnpl","le_personal_cash_loans","le_mortgage_provider","le_mortgage_broker","le_loan_aggregator_marketplace"]},{"id":"le_primary_lending_application","v":"lending","name":"Primary Lending Application","cat":"Credit & Underwriting","prio":"Primary","desc":"Replaces manual bank statement uploads with real-time bank data, streamlining the user journey while delivering richer financial insights and enabling automated underwriting workflows.","prods":[{"n":"Essential Data: Retail","g":"Data","rg":{"UAE":1,"KSA":1}},{"n":"Silver Data: Retail","g":"Data","rg":{"UAE":1,"KSA":1}},{"n":"Gold Data: Retail","g":"Data","rg":{"UAE":2,"KSA":2}},{"n":"Essential Data: Corporate","g":"Data","rg":{"UAE":2,"KSA":1}},{"n":"Silver Data: Corporate","g":"Data","rg":{"UAE":2,"KSA":1}},{"n":"Gold Data: Corporate","g":"Data","rg":{"UAE":2,"KSA":2}}],"subs":["le_mortgage_provider","le_medical_loans","le_automobile_loans"]},{"id":"le_second_look_lending","v":"lending","name":"Second-look lending","cat":"Credit & Underwriting","prio":"Primary","desc":"A second evaluation for initially rejected applicants, expanding the serviceable market and increasing approvals while maintaining risk controls and reducing default rates.","prods":[{"n":"Essential Data: Retail","g":"Data","rg":{"UAE":1,"KSA":1}},{"n":"Silver Data: Retail","g":"Data","rg":{"UAE":1,"KSA":1}},{"n":"Gold Data: Retail","g":"Data","rg":{"UAE":2,"KSA":2}},{"n":"Essential Data: Corporate","g":"Data","rg":{"UAE":2,"KSA":1}},{"n":"Silver Data: Corporate","g":"Data","rg":{"UAE":2,"KSA":1}},{"n":"Gold Data: Corporate","g":"Data","rg":{"UAE":2,"KSA":2}}],"subs":["le_bnpl","le_rnpl","le_personal_cash_loans","le_sme_financing","le_revenue_based_financing","le_mortgage_provider","le_medical_loans","le_automobile_loans"]},{"id":"le_credit_limit_increase","v":"lending","name":"Credit limit increase","cat":"Credit & Underwriting","prio":"Primary","desc":"Using real-time bank data to uncover income signals not visible via traditional sources, providing a complete financial view on customers to enable higher credit limits.","prods":[{"n":"Essential Data: Retail","g":"Data","rg":{"UAE":1,"KSA":1}},{"n":"Silver Data: Retail","g":"Data","rg":{"UAE":1,"KSA":1}},{"n":"Gold Data: Retail","g":"Data","rg":{"UAE":2,"KSA":2}},{"n":"Essential Data: Corporate","g":"Data","rg":{"UAE":2,"KSA":1}},{"n":"Silver Data: Corporate","g":"Data","rg":{"UAE":2,"KSA":1}},{"n":"Gold Data: Corporate","g":"Data","rg":{"UAE":2,"KSA":2}}],"subs":["le_bnpl","le_rnpl","le_personal_cash_loans","le_digital_bank"]},{"id":"le_buyout_liability_consolidation","v":"lending","name":"Buyout/ Liability Consolidation","cat":"Credit & Underwriting","prio":"Primary","desc":"Verifies a borrower's full existing debt obligations across institutions and settle outstanding finance on their behalf, facilitating debt consolidation and salary transfer programmes.","prods":[{"n":"Gold Data: Retail","g":"Data","rg":{"UAE":2,"KSA":2}},{"n":"Gold Data: Corporate","g":"Data","rg":{"UAE":2,"KSA":2}},{"n":"Domestic AVS: Retail","g":"Verification","rg":{"UAE":1,"KSA":1}},{"n":"Domestic AVS: Corporate","g":"Verification","rg":{"UAE":1,"KSA":1}},{"n":"Domestic AVS+: Retail","g":"Verification","rg":{"UAE":1,"KSA":1}},{"n":"Domestic AVS+: Corporate","g":"Verification","rg":{"UAE":1,"KSA":1}}],"subs":["le_personal_cash_loans","le_loan_aggregator_marketplace"]},{"id":"le_iban_account_verification","v":"lending","name":"IBAN account verification","cat":"Payments & Disbursement","prio":"Primary","desc":"Verifies that the provided IBAN belongs to the applicant, ensuring payouts are sent to the correct and legitimate account while preventing fraud and operational errors.","prods":[{"n":"Essential Data: Retail","g":"Data","rg":{"UAE":1}},{"n":"Silver Data: Retail","g":"Data","rg":{"UAE":1}},{"n":"Gold Data: Retail","g":"Data","rg":{"UAE":2}},{"n":"Essential Data: Corporate","g":"Data","rg":{"UAE":2}},{"n":"Silver Data: Corporate","g":"Data","rg":{"UAE":2}},{"n":"Gold Data: Corporate","g":"Data","rg":{"UAE":2}},{"n":"Domestic AVS: Retail","g":"Verification","rg":{"KSA":1}},{"n":"Domestic AVS: Freelancer","g":"Verification","rg":{"KSA":1}},{"n":"Domestic AVS: Corporate","g":"Verification","rg":{"KSA":1}},{"n":"Domestic AVS+: Retail","g":"Verification","rg":{"KSA":1}},{"n":"Domestic AVS+: Freelancer","g":"Verification","rg":{"KSA":1}},{"n":"Domestic AVS+: Corporate","g":"Verification","rg":{"KSA":1}}],"subs":["le_bnpl","le_rnpl","le_mortgage_provider","le_p2p_lending","le_digital_bank","le_loan_aggregator_marketplace","le_insurance_broker","le_insurance_provider","le_insurance_aggregator","le_tpas"]},{"id":"le_automated_loan_disbursement","v":"lending","name":"Automated Loan Disbursement","cat":"Payments & Disbursement","prio":"Primary","desc":"Automates loan disbursements directly to verified customer bank accounts, enabling instant payouts while eliminating manual transfer processes.","prods":[{"n":"Retail Payment Initiation: Other Industries","g":"Pay-ins","rg":{"UAE":1}},{"n":"Corporate Payment Initiation","g":"Pay-ins","rg":{"UAE":2}},{"n":"Additional VIBANs","g":"Pay-ins","rg":{"UAE":1}},{"n":"Payouts","g":"Payouts","rg":{"UAE":1}},{"n":"Essential Data: Retail","g":"Data","rg":{"UAE":1,"KSA":1}},{"n":"Silver Data: Retail","g":"Data","rg":{"UAE":1,"KSA":1}},{"n":"Gold Data: Retail","g":"Data","rg":{"UAE":2,"KSA":2}},{"n":"Essential Data: Corporate","g":"Data","rg":{"UAE":2,"KSA":1}},{"n":"Silver Data: Corporate","g":"Data","rg":{"UAE":2,"KSA":1}},{"n":"Gold Data: Corporate","g":"Data","rg":{"UAE":2,"KSA":2}}],"subs":["le_bnpl","le_rnpl","le_personal_cash_loans","le_sme_financing","le_revenue_based_financing","le_medical_loans","le_automobile_loans","le_digital_bank"]},{"id":"le_loan_collections","v":"lending","name":"Loan Collections","cat":"Payments & Disbursement","prio":"Primary","desc":"Scheduled loan repayments plus one-off collections to recover from borrowers who are late or have defaulted on their loans.","prods":[{"n":"Retail Payment Initiation: Remittance & Sweeping","g":"Pay-ins","rg":{"UAE":1}},{"n":"Retail Payment Initiation: Other Industries","g":"Pay-ins","rg":{"UAE":1}},{"n":"Corporate Payment Initiation","g":"Pay-ins","rg":{"UAE":2}},{"n":"Account on File - one-tap","g":"Pay-ins (New)","rg":{"UAE":1}},{"n":"Account on File - Scheduling","g":"Pay-ins (New)","rg":{"UAE":1}},{"n":"Payment Links","g":"Pay-ins (New)","rg":{"UAE":1}}],"subs":["le_bnpl","le_rnpl","le_personal_cash_loans","le_sme_financing","le_revenue_based_financing","le_automobile_loans"]},{"id":"le_income_verification","v":"lending","name":"Income Verification","cat":"Verification","prio":"Secondary","desc":"Verified salary data insights to assess a borrower's ability to repay a loan at any stage of lending journey.","prods":[{"n":"Essential Data: Retail","g":"Data","rg":{"UAE":1,"KSA":1}},{"n":"Silver Data: Retail","g":"Data","rg":{"UAE":1,"KSA":1}},{"n":"Gold Data: Retail","g":"Data","rg":{"UAE":2,"KSA":2}},{"n":"Essential Data: Corporate","g":"Data","rg":{"UAE":2,"KSA":1}},{"n":"Silver Data: Corporate","g":"Data","rg":{"UAE":2,"KSA":1}},{"n":"Gold Data: Corporate","g":"Data","rg":{"UAE":2,"KSA":2}}],"subs":["le_bnpl","le_rnpl","le_personal_cash_loans","le_mortgage_provider","le_mortgage_broker","le_medical_loans","le_automobile_loans"]},{"id":"le_freelancer_underwriting","v":"lending","name":"Freelancer Underwriting","cat":"Verification","prio":"Secondary","desc":"Confirming that an individual is a legitimate, registered freelancer and eligible to receive payments or access financial services","prods":[{"n":"International AVS: Group 5 - KSA AVS Freelancer","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 5 - KSA AVS+ Freelancer","g":"Verification","rg":{"UAE":1}},{"n":"Freelancer Verification: Basic Check","g":"Verification","rg":{"KSA":1}},{"n":"Freelancer Verification: Full Check","g":"Verification","rg":{"KSA":1}}],"subs":["le_bnpl","le_rnpl","le_personal_cash_loans","le_sme_financing","le_revenue_based_financing","le_medical_loans","le_automobile_loans","le_digital_bank"]},{"id":"le_merchant_onboarding","v":"lending","name":"Merchant Onboarding","cat":"Verification","prio":"Secondary","desc":"Confirming that a bank account exists, is active, and belongs to the person or business claiming it at the onboarding stage. e.g. SME, corporate, landlord or customer account verification","prods":[{"n":"Domestic AVS: Retail","g":"Verification","rg":{"UAE":1,"KSA":1}},{"n":"Domestic AVS: Corporate","g":"Verification","rg":{"UAE":1,"KSA":1}},{"n":"Domestic AVS+: Retail","g":"Verification","rg":{"UAE":1,"KSA":1}},{"n":"Domestic AVS+: Corporate","g":"Verification","rg":{"UAE":1,"KSA":1}},{"n":"International AVS: Group 1","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 2","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 3","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 4","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 5 - KSA AVS Retail","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 5 - KSA AVS+ Retail","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 5 - KSA AVS Corporate","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 5 - KSA AVS+ Corporate","g":"Verification","rg":{"UAE":1}},{"n":"Domestic AVS: Freelancer","g":"Verification","rg":{"KSA":1}},{"n":"Domestic AVS+: Freelancer","g":"Verification","rg":{"KSA":1}},{"n":"Business Verification: Basic Check","g":"Verification","rg":{"KSA":1}},{"n":"Business Verification: Full Check","g":"Verification","rg":{"KSA":1}},{"n":"Business Verification: Articles of Association","g":"Verification","rg":{"KSA":1}},{"n":"Business Verification: Manager Permissions","g":"Verification","rg":{"KSA":1}},{"n":"Business Verification: Address","g":"Verification","rg":{"KSA":1}}],"subs":["le_bnpl","le_rnpl","le_personal_cash_loans","le_sme_financing","le_revenue_based_financing","le_mortgage_provider","le_mortgage_broker","le_medical_loans","le_automobile_loans","le_social_savings","le_p2p_lending","le_digital_bank","le_loan_aggregator_marketplace","le_insurance_broker","le_insurance_provider","le_insurance_aggregator","le_tpas"]},{"id":"tr_user_onboarding_kyc","v":"trading","name":"User Onboarding (KYC)","cat":"Onboarding","prio":null,"desc":"Verify that the bank account belongs to the account holder before onboarding, so funds only ever move to and from a confirmed owner.","prods":[{"n":"Essential Data: Retail","g":"Data","rg":{"UAE":1}},{"n":"Silver Data: Retail","g":"Data","rg":{"UAE":1}},{"n":"Domestic AVS: Retail","g":"Verification","rg":{"UAE":1}},{"n":"Domestic AVS+: Retail","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 1","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 2","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 3","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 4","g":"Verification","rg":{"UAE":1}}],"subs":["tr_trading_brokerages_cfds_with_leverage","tr_trading_brokerages_cfds_without_leverage","tr_gold_trading","tr_robo_advisory_wealth_management","tr_crypto","tr_crowdfunding","tr_igaming","tr_streaming_platforms"]},{"id":"tr_partner_onboarding_kyb","v":"trading","name":"Partner Onboarding (KYB)","cat":"Onboarding","prio":null,"desc":"Confirm legal entity and account ownership before activating a business relationship, no manual documents, no delays.","prods":[{"n":"Domestic AVS: Corporate","g":"Verification","rg":{"UAE":1}},{"n":"Domestic AVS+: Corporate","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 5 - KSA AVS Corporate","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 5 - KSA AVS+ Corporate","g":"Verification","rg":{"UAE":1}}],"subs":["tr_payment_aggregator","tr_ptdp","tr_payment_orchestrator","tr_pos_provider"]},{"id":"tr_merchant_verification_settlement","v":"trading","name":"Merchant Verification (Settlement)","cat":"Onboarding","prio":null,"desc":"Verify a merchant's settlement account before onboarding, so funds are only ever paid out to a verified business account.","prods":[{"n":"Domestic AVS: Corporate","g":"Verification","rg":{"UAE":1}},{"n":"Domestic AVS+: Corporate","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 5 - KSA AVS Corporate","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 5 - KSA AVS+ Corporate","g":"Verification","rg":{"UAE":1}}],"subs":["tr_payment_aggregator","tr_payment_orchestrator","tr_pos_provider"]},{"id":"tr_account_funding","v":"trading","name":"Account Funding","cat":"First Deposit","prio":null,"desc":"The customer's first bank-to-platform transfer, done instantly in-session via a direct bank payment. Faster and cheaper than card.","prods":[{"n":"Retail Payment Initiation: Other Industries (SIP)","g":"Pay-ins","rg":{"UAE":1}},{"n":"Reconciliation","g":"Pay-ins","rg":{"UAE":1}},{"n":"Guaranteed Payments","g":"Pay-ins","rg":{"UAE":1}},{"n":"Additional VIBANs","g":"Pay-ins","rg":{"UAE":1}},{"n":"Account on File - one-tap","g":"Pay-ins (New)","rg":{"UAE":1}},{"n":"Account on File - Scheduling","g":"Pay-ins (New)","rg":{"UAE":1}},{"n":"Domestic AVS: Retail","g":"Verification","rg":{"KSA":1}},{"n":"Domestic AVS: Freelancer","g":"Verification","rg":{"KSA":1}},{"n":"Domestic AVS: Corporate","g":"Verification","rg":{"KSA":1}},{"n":"Domestic AVS+: Retail","g":"Verification","rg":{"KSA":1}},{"n":"Domestic AVS+: Freelancer","g":"Verification","rg":{"KSA":1}},{"n":"Domestic AVS+: Corporate","g":"Verification","rg":{"KSA":1}}],"subs":["tr_trading_brokerages_cfds_with_leverage","tr_trading_brokerages_cfds_without_leverage","tr_gold_trading","tr_robo_advisory_wealth_management","tr_crypto","tr_crowdfunding","tr_payment_aggregator","tr_ptdp","tr_payment_orchestrator","tr_pos_provider","tr_igaming","tr_esports","tr_streaming_platforms"]},{"id":"tr_high_value_large_ticket_funding","v":"trading","name":"High-Value / Large Ticket Funding","cat":"First Deposit","prio":null,"desc":"Accept large or urgent one-off deposits via Payment Links or QR code. Works for OTC desks, retail counters.","prods":[{"n":"Retail Payment Initiation: Other Industries (SIP)","g":"Pay-ins","rg":{"UAE":1}},{"n":"Reconciliation","g":"Pay-ins","rg":{"UAE":1}},{"n":"Guaranteed Payments","g":"Pay-ins","rg":{"UAE":1}},{"n":"Using Lean via Fuse","g":"Pay-ins","rg":{"UAE":1}},{"n":"Additional VIBANs","g":"Pay-ins","rg":{"UAE":1}},{"n":"Account on File - one-tap","g":"Pay-ins (New)","rg":{"UAE":1}},{"n":"Account on File - Scheduling","g":"Pay-ins (New)","rg":{"UAE":1}},{"n":"Payment Links","g":"Pay-ins (New)","rg":{"UAE":1}},{"n":"Essential Data: Retail","g":"Data","rg":{"KSA":1}},{"n":"Silver Data: Retail","g":"Data","rg":{"KSA":1}},{"n":"Gold Data: Retail","g":"Data","rg":{"KSA":2}},{"n":"Essential Data: Corporate","g":"Data","rg":{"KSA":1}},{"n":"Silver Data: Corporate","g":"Data","rg":{"KSA":1}},{"n":"Gold Data: Corporate","g":"Data","rg":{"KSA":2}}],"subs":["tr_trading_brokerages_cfds_with_leverage","tr_trading_brokerages_cfds_without_leverage","tr_gold_trading","tr_robo_advisory_wealth_management","tr_crypto","tr_crowdfunding","tr_payment_aggregator","tr_ptdp","tr_payment_orchestrator","tr_igaming"]},{"id":"tr_repeat_top_ups","v":"trading","name":"Repeat Top-ups","cat":"Recurring Deposits","prio":null,"desc":"Customers save their bank once and top up repeatedly with one tap, without re-authenticating, for up to 12 months.","prods":[{"n":"Retail Payment Initiation: Other Industries (SIP)","g":"Pay-ins","rg":{"UAE":1}},{"n":"Reconciliation","g":"Pay-ins","rg":{"UAE":1}},{"n":"Additional VIBANs","g":"Pay-ins","rg":{"UAE":1}},{"n":"Account on File - one-tap","g":"Pay-ins (New)","rg":{"UAE":1}},{"n":"Account on File - Scheduling","g":"Pay-ins (New)","rg":{"UAE":1}},{"n":"Payment Links","g":"Pay-ins (New)","rg":{"UAE":1}},{"n":"Essential Data: Retail","g":"Data","rg":{"KSA":1}},{"n":"Silver Data: Retail","g":"Data","rg":{"KSA":1}},{"n":"Gold Data: Retail","g":"Data","rg":{"KSA":2}},{"n":"Essential Data: Corporate","g":"Data","rg":{"KSA":1}},{"n":"Silver Data: Corporate","g":"Data","rg":{"KSA":1}},{"n":"Gold Data: Corporate","g":"Data","rg":{"KSA":2}}],"subs":["tr_trading_brokerages_cfds_with_leverage","tr_trading_brokerages_cfds_without_leverage","tr_gold_trading","tr_robo_advisory_wealth_management","tr_crypto","tr_payment_aggregator","tr_ptdp","tr_payment_orchestrator","tr_streaming_platforms"]},{"id":"tr_verified_topups","v":"trading","name":"Verified Topups","cat":"Recurring Deposits","prio":null,"desc":"Verify the funding account before a top-up is processed, so balance loads only ever come from a verified source.","prods":[{"n":"Domestic AVS: Retail","g":"Verification","rg":{"UAE":1}},{"n":"Domestic AVS+: Retail","g":"Verification","rg":{"UAE":1}}],"subs":["tr_crypto","tr_ptdp","tr_igaming"]},{"id":"tr_withdrawals","v":"trading","name":"Withdrawals","cat":"Withdrawals","prio":null,"desc":"Send funds back to the customer's verified bank for profits, winnings, redemptions, or refunds. Every payout includes an IBAN name check.","prods":[{"n":"Refunds","g":"Payouts","rg":{"UAE":1}},{"n":"Payouts","g":"Payouts","rg":{"UAE":1}},{"n":"Domestic AVS: Retail","g":"Verification","rg":{"UAE":1}},{"n":"Essential Data: Retail","g":"Data","rg":{"KSA":1}},{"n":"Silver Data: Retail","g":"Data","rg":{"KSA":1}},{"n":"Gold Data: Retail","g":"Data","rg":{"KSA":2}},{"n":"Essential Data: Corporate","g":"Data","rg":{"KSA":1}},{"n":"Silver Data: Corporate","g":"Data","rg":{"KSA":1}},{"n":"Gold Data: Corporate","g":"Data","rg":{"KSA":2}}],"subs":["tr_trading_brokerages_cfds_with_leverage","tr_trading_brokerages_cfds_without_leverage","tr_gold_trading","tr_robo_advisory_wealth_management","tr_crypto","tr_crowdfunding","tr_igaming"]},{"id":"tr_verified_withdrawals","v":"trading","name":"Verified Withdrawals","cat":"Withdrawals","prio":null,"desc":"Verify the linked bank account before funds move in or out, keeping every contribution and withdrawal tied to a verified owner.","prods":[{"n":"Domestic AVS: Retail","g":"Verification","rg":{"UAE":1}},{"n":"Domestic AVS+: Retail","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 1","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 2","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 3","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 4","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 5 - KSA AVS Retail","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 5 - KSA AVS+ Retail","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 5 - KSA AVS Corporate","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 5 - KSA AVS+ Corporate","g":"Verification","rg":{"UAE":1}}],"subs":["tr_trading_brokerages_cfds_with_leverage","tr_trading_brokerages_cfds_without_leverage","tr_gold_trading","tr_robo_advisory_wealth_management","tr_crypto","tr_crowdfunding","tr_payment_aggregator","tr_payment_orchestrator","tr_pos_provider","tr_igaming","tr_streaming_platforms"]},{"id":"tr_investor_upgrade","v":"trading","name":"Investor Upgrade","cat":"Engagement","prio":null,"desc":"Use verified income and balance data to qualify customers for higher deposit limits, leverage, or premium account tiers, without asking them to upload payslips.","prods":[{"n":"Essential Data: Retail","g":"Data","rg":{"UAE":1,"KSA":1}},{"n":"Silver Data: Retail","g":"Data","rg":{"UAE":1,"KSA":1}},{"n":"Gold Data: Retail","g":"Data","rg":{"UAE":2,"KSA":2}},{"n":"Essential Data: Corporate","g":"Data","rg":{"KSA":1}},{"n":"Silver Data: Corporate","g":"Data","rg":{"KSA":1}},{"n":"Gold Data: Corporate","g":"Data","rg":{"KSA":2}}],"subs":["tr_trading_brokerages_cfds_with_leverage","tr_trading_brokerages_cfds_without_leverage","tr_gold_trading","tr_robo_advisory_wealth_management","tr_crypto","tr_crowdfunding","tr_igaming"]},{"id":"tr_personalized_engagement","v":"trading","name":"Personalized Engagement","cat":"Engagement","prio":null,"desc":"Use open-finance data for details on salary dates, spending patterns, cash surplus to reach customers at the right moment with relevant nudges (top-up prompts, KYC refreshes, personalized offers).","prods":[{"n":"Silver Data: Retail","g":"Data","rg":{"UAE":1}},{"n":"Gold Data: Retail","g":"Data","rg":{"UAE":2}},{"n":"Domestic AVS: Retail","g":"Verification","rg":{"UAE":1}},{"n":"Domestic AVS+: Retail","g":"Verification","rg":{"UAE":1}},{"n":"Freelancer Verification: Basic Check","g":"Verification","rg":{"KSA":1}},{"n":"Freelancer Verification: Full Check","g":"Verification","rg":{"KSA":1}}],"subs":["tr_trading_brokerages_cfds_with_leverage","tr_trading_brokerages_cfds_without_leverage","tr_gold_trading","tr_robo_advisory_wealth_management","tr_crypto","tr_crowdfunding","tr_igaming"]},{"id":"re_sender_account_verification","v":"remittance","name":"Sender Account Verification","cat":"Verification & Onboarding","prio":null,"desc":"Confirms the sender's funding bank account is active and belongs to them before the first transfer","prods":[{"n":"Domestic AVS: Retail","g":"Verification","rg":{"UAE":1}},{"n":"Domestic AVS+: Retail","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 1","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 2","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 3","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 4","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 5 - KSA AVS Retail","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 5 - KSA AVS+ Retail","g":"Verification","rg":{"UAE":1}},{"n":"Essential Data: Retail","g":"Data","rg":{"KSA":1}},{"n":"Silver Data: Retail","g":"Data","rg":{"KSA":1}},{"n":"Gold Data: Retail","g":"Data","rg":{"KSA":2}},{"n":"Essential Data: Corporate","g":"Data","rg":{"KSA":1}},{"n":"Silver Data: Corporate","g":"Data","rg":{"KSA":1}},{"n":"Gold Data: Corporate","g":"Data","rg":{"KSA":2}}],"subs":["re_domestic_digital_remittance_platform","re_digital_wallet_open_loop","re_mto_money_transfer_operator","re_payroll_salary_transfer","re_b2b_cross_border_payments"]},{"id":"re_beneficiary_recipient_verification","v":"remittance","name":"Beneficiary / recipient verification","cat":"Verification & Onboarding","prio":null,"desc":"Confirm that the overseas bank account belongs to the intended individual before releasing the transfer.","prods":[{"n":"Domestic AVS: Retail","g":"Verification","rg":{"UAE":1}},{"n":"Domestic AVS+: Retail","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 1","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 2","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 3","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 4","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 5 - KSA AVS Retail","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 5 - KSA AVS+ Retail","g":"Verification","rg":{"UAE":1}},{"n":"Essential Data: Retail","g":"Data","rg":{"KSA":1}},{"n":"Silver Data: Retail","g":"Data","rg":{"KSA":1}},{"n":"Gold Data: Retail","g":"Data","rg":{"KSA":2}},{"n":"Essential Data: Corporate","g":"Data","rg":{"KSA":1}},{"n":"Silver Data: Corporate","g":"Data","rg":{"KSA":1}},{"n":"Gold Data: Corporate","g":"Data","rg":{"KSA":2}}],"subs":["re_domestic_exchange_house","re_domestic_digital_remittance_platform","re_digital_wallet_open_loop","re_digital_wallet_closed_loop","re_international_remittance_platforms","re_mto_money_transfer_operator","re_bank_led_remittance","re_payroll_salary_transfer","re_b2b_cross_border_payments","re_freelancer_contractor_payouts","re_marketplace_gig_payouts"]},{"id":"re_vendors_supplier_verification","v":"remittance","name":"Vendors/Supplier Verification","cat":"Verification & Onboarding","prio":null,"desc":"Confirm that the overseas bank account belongs to the intended business, supplier, institution or corporate recipient.","prods":[{"n":"Domestic AVS: Corporate","g":"Verification","rg":{"UAE":1}},{"n":"Domestic AVS+: Corporate","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 1","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 2","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 3","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 4","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 5 - KSA AVS Corporate","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 5 - KSA AVS+ Corporate","g":"Verification","rg":{"UAE":1}},{"n":"Essential Data: Retail","g":"Data","rg":{"KSA":1}},{"n":"Silver Data: Retail","g":"Data","rg":{"KSA":1}},{"n":"Gold Data: Retail","g":"Data","rg":{"KSA":2}},{"n":"Essential Data: Corporate","g":"Data","rg":{"KSA":1}},{"n":"Silver Data: Corporate","g":"Data","rg":{"KSA":1}},{"n":"Gold Data: Corporate","g":"Data","rg":{"KSA":2}}],"subs":["re_domestic_exchange_house","re_domestic_digital_remittance_platform","re_digital_wallet_open_loop","re_digital_wallet_closed_loop","re_international_remittance_platforms","re_bank_led_remittance","re_marketplace_gig_payouts"]},{"id":"re_individual_beneficiary_payout","v":"remittance","name":"Individual Beneficiary Payout","cat":"Payments","prio":null,"desc":"Disburse funds to a verified individual bank account remittance recipient, gig worker, freelancer) in the destination market.","prods":[{"n":"Payouts","g":"Payouts","rg":{"UAE":1}},{"n":"Domestic AVS: Retail","g":"Verification","rg":{"UAE":1,"KSA":1}},{"n":"Domestic AVS+: Retail","g":"Verification","rg":{"UAE":1,"KSA":1}},{"n":"International AVS: Group 1","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 2","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 3","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 4","g":"Verification","rg":{"UAE":1}},{"n":"Domestic AVS: Freelancer","g":"Verification","rg":{"KSA":1}},{"n":"Domestic AVS: Corporate","g":"Verification","rg":{"KSA":1}},{"n":"Domestic AVS+: Freelancer","g":"Verification","rg":{"KSA":1}},{"n":"Domestic AVS+: Corporate","g":"Verification","rg":{"KSA":1}}],"subs":["re_domestic_exchange_house","re_domestic_digital_remittance_platform","re_digital_wallet_open_loop","re_international_remittance_platforms","re_mto_money_transfer_operator","re_bank_led_remittance","re_payroll_salary_transfer","re_b2b_cross_border_payments","re_freelancer_contractor_payouts","re_marketplace_gig_payouts","re_travel_money_fx_app","re_crypto_exchange_on_off_ramp_platform"]},{"id":"re_cross_border_fx_conversion","v":"remittance","name":"Cross-Border FX Conversion","cat":"Payments","prio":null,"desc":"Handle foreign exchange conversion at transparent rates for international remittances Convert the collected amount into the destination currency before settlement or payout.","prods":[{"n":"Operational Settlement - Standard - FX Premium","g":"SwiftX","rg":{"UAE":1}},{"n":"Currency Exchange - Standard - FX Premium","g":"SwiftX","rg":{"UAE":1}},{"n":"Essential Data: Retail","g":"Data","rg":{"KSA":1}},{"n":"Silver Data: Retail","g":"Data","rg":{"KSA":1}},{"n":"Gold Data: Retail","g":"Data","rg":{"KSA":2}},{"n":"Essential Data: Corporate","g":"Data","rg":{"KSA":1}},{"n":"Silver Data: Corporate","g":"Data","rg":{"KSA":1}},{"n":"Gold Data: Corporate","g":"Data","rg":{"KSA":2}}],"subs":["re_domestic_exchange_house","re_domestic_digital_remittance_platform","re_digital_wallet_open_loop","re_digital_wallet_closed_loop","re_international_remittance_platforms","re_bank_led_remittance"]},{"id":"re_consumer_a2a_top_ups","v":"remittance","name":"Consumer A2A Top-ups","cat":"Payments","prio":null,"desc":"Let an individual sender fund their wallet directly from their bank account during the remittance journey, reducing the cost of cards, removing manual bank transfers, and improving payment confirmation.","prods":[{"n":"Retail Payment Initiation: Remittance & Sweeping","g":"Pay-ins","rg":{"UAE":1}},{"n":"Guaranteed Payments","g":"Pay-ins","rg":{"UAE":1}},{"n":"Using Lean via Fuse","g":"Pay-ins (New)","rg":{"UAE":1}},{"n":"Account on File - one-tap","g":"Pay-ins (New)","rg":{"UAE":1}},{"n":"Account on File - Scheduling","g":"Pay-ins (New)","rg":{"UAE":1}}],"subs":["re_domestic_exchange_house","re_domestic_digital_remittance_platform","re_digital_wallet_open_loop","re_digital_wallet_closed_loop","re_international_remittance_platforms","re_mto_money_transfer_operator","re_bank_led_remittance","re_payroll_salary_transfer","re_b2b_cross_border_payments","re_freelancer_contractor_payouts","re_marketplace_gig_payouts","re_travel_money_fx_app","re_crypto_exchange_on_off_ramp_platform"]},{"id":"re_bulk_and_batch_payouts","v":"remittance","name":"Bulk and batch payouts","cat":"Payments","prio":null,"desc":"Execute high-volume payroll, contractor, seller or marketplace disbursements with consistent payout tracking.","prods":[{"n":"Payouts","g":"Payouts","rg":{"UAE":1}}],"subs":["re_domestic_exchange_house","re_domestic_digital_remittance_platform","re_digital_wallet_open_loop","re_international_remittance_platforms","re_mto_money_transfer_operator","re_bank_led_remittance","re_payroll_salary_transfer","re_b2b_cross_border_payments","re_freelancer_contractor_payouts","re_marketplace_gig_payouts","re_travel_money_fx_app","re_crypto_exchange_on_off_ramp_platform"]},{"id":"re_high_value_reversals","v":"remittance","name":"High value Reversals","cat":"Payments","prio":null,"desc":"Returns high value funds to a verified account and supports operational recovery when a transfer is cancelled, rejected or cannot be completed.","prods":[{"n":"International AVS: Group 1","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 2","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 3","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 4","g":"Verification","rg":{"UAE":1}}],"subs":["re_international_remittance_platforms","re_mto_money_transfer_operator","re_bank_led_remittance","re_b2b_cross_border_payments","re_crypto_exchange_on_off_ramp_platform"]},{"id":"re_refunds_on_cancelled_transfers","v":"remittance","name":"Refunds on Cancelled Transfers","cat":"Payments","prio":null,"desc":"When a customer cancels a remittance after depositing cash, the platform must re-verify the customer's account before refunding the deposit to prevent failed returns and ensure funds reach the correct account.","prods":[{"n":"Payouts","g":"Payouts","rg":{"UAE":1}},{"n":"International AVS: Group 1","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 2","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 3","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 4","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 5 - KSA AVS Retail","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 5 - KSA AVS+ Retail","g":"Verification","rg":{"UAE":1}}],"subs":["re_domestic_exchange_house","re_domestic_digital_remittance_platform","re_mto_money_transfer_operator","re_bank_led_remittance"]},{"id":"re_international_corridor_settlement","v":"remittance","name":"International corridor settlement","cat":"Payments","prio":null,"desc":"Settle the cross-border leg faster between the remittance provider, banking partners and destination market.","prods":[{"n":"Operational Settlement - Standard - FX Premium","g":"SwiftX","rg":{"UAE":1}},{"n":"Currency Exchange - Standard - FX Premium","g":"SwiftX","rg":{"UAE":1}}],"subs":["re_digital_wallet_open_loop","re_international_remittance_platforms","re_mto_money_transfer_operator"]},{"id":"re_fiat_withdrawal","v":"remittance","name":"Fiat Withdrawal","cat":"Payments","prio":null,"desc":"Converting cryptocurrency (USDT, USDC) to local fiat currency (AED, USD, PKR) and transferring to a verified personal or business bank account.","prods":[{"n":"Operational Settlement - Standard - FX Premium","g":"SwiftX","rg":{"UAE":1}},{"n":"Currency Exchange - Standard - FX Premium","g":"SwiftX","rg":{"UAE":1}}],"subs":["re_crypto_exchange_on_off_ramp_platform"]},{"id":"re_recurring_remittances_scheduled_transfers","v":"remittance","name":"Recurring remittances / scheduled transfers","cat":"Payments","prio":null,"desc":"Supports repeat money transfers by using linked-account data and payment schedules to reduce friction for customers who send on a regular cycle.","prods":[{"n":"Retail Payment Initiation: Remittance & Sweeping","g":"Pay-ins","rg":{"UAE":1}},{"n":"International AVS: Group 5 - KSA AVS Freelancer","g":"Verification","rg":{"UAE":1}},{"n":"International AVS: Group 5 - KSA AVS+ Freelancer","g":"Verification","rg":{"UAE":1}}],"subs":[]},{"id":"re_payment_reconciliation","v":"remittance","name":"Payment Reconciliation","cat":"Reconciliation","prio":null,"desc":"Matches incoming pay-ins, transfer instructions, FX events and outbound payouts so operations teams can close breaks faster and maintain a clear audit trail.","prods":[{"n":"Reconciliation","g":"Pay-ins","rg":{"UAE":1}},{"n":"Essential Data: Retail","g":"Data","rg":{"KSA":1}},{"n":"Silver Data: Retail","g":"Data","rg":{"KSA":1}},{"n":"Gold Data: Retail","g":"Data","rg":{"KSA":2}},{"n":"Essential Data: Corporate","g":"Data","rg":{"KSA":1}},{"n":"Silver Data: Corporate","g":"Data","rg":{"KSA":1}},{"n":"Gold Data: Corporate","g":"Data","rg":{"KSA":2}}],"subs":["re_domestic_exchange_house","re_domestic_digital_remittance_platform","re_digital_wallet_open_loop","re_digital_wallet_closed_loop","re_international_remittance_platforms","re_mto_money_transfer_operator","re_bank_led_remittance","re_payroll_salary_transfer","re_b2b_cross_border_payments","re_freelancer_contractor_payouts","re_marketplace_gig_payouts","re_travel_money_fx_app","re_crypto_exchange_on_off_ramp_platform"]}]};
+
+/* ── indexes ── */
+const VCOLOR={lending:"green",trading:"purple",remittance:"blue"};
+const VDARK={green:"var(--green-d)",purple:"var(--purple)",blue:"var(--blue)"};
+const VMAIN={green:"var(--green)",purple:"var(--purple)",blue:"var(--blue)"};
+const VLIGHT={green:"var(--green-l)",purple:"var(--purple-l)",blue:"var(--blue-l)"};
+const CATCOLORS=["green","coral","purple","amber","blue"];
+const FAMORDER=["Pay-ins","Pay-ins (New)","Payouts","Data","Verification","SwiftX"];
+
+const subById={},ucById={};
+DB.subs.forEach(s=>subById[s.id]=s);
+DB.ucs.forEach(u=>ucById[u.id]=u);
+
+const catColor={}; // vertical -> cat -> color
+DB.verticals.forEach(v=>{
+  const cats=[...new Set(DB.ucs.filter(u=>u.v===v.id).map(u=>u.cat))];
+  catColor[v.id]={};
+  cats.forEach((c,i)=>catColor[v.id][c]=CATCOLORS[i%CATCOLORS.length]);
+});
+
+// unique products per vertical
+const prodsByV={};
+DB.verticals.forEach(v=>{
+  const m={};
+  DB.ucs.filter(u=>u.v===v.id).forEach(u=>u.prods.forEach(p=>{
+    const k=p.g+"|"+p.n;
+    const e=m[k]||(m[k]={key:k,n:p.n,g:p.g,rg:{}});
+    Object.entries(p.rg).forEach(([r,st])=>{e.rg[r]=Math.max(e.rg[r]||0,st)});
+  }));
+  prodsByV[v.id]=Object.values(m).sort((a,b)=>FAMORDER.indexOf(a.g)-FAMORDER.indexOf(b.g)||a.n.localeCompare(b.n));
+});
+
+/* ── state ── */
+let V="lending",VIEW="industry",R="Both",I=null,T="chain";
+
+const esc=s=>String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const col=()=>VCOLOR[V];
+function setHl(el){const c=col();el.style.setProperty("--hl",VMAIN[c]);el.style.setProperty("--hl-l",VLIGHT[c]);el.style.setProperty("--hl-d",VDARK[c]);}
+
+/* region helpers */
+const rgVisible=p=>R==="Both"?Object.keys(p.rg).length>0:p.rg[R]!=null;
+function rgTags(p){
+  return ["UAE","KSA"].filter(r=>p.rg[r]&&(R==="Both"||R===r))
+    .map(r=>`<span class="rg ${p.rg[r]===2?"rg-na":(r==="UAE"?"rg-uae":"rg-ksa")}" title="${p.rg[r]===2?"Not currently available in "+r:"Applies in "+r}">${r}</span>`).join("");
+}
+
+/* ── vertical cards ── */
+function rVsec(){
+  document.getElementById("vsec").innerHTML=DB.verticals.map((v,i)=>{
+    const ucN=DB.ucs.filter(u=>u.v===v.id).length,subN=DB.subs.filter(s=>s.v===v.id).length;
+    return`<div class="vcard ${V===v.id?"on":""}" data-v="${v.id}" data-act="vert">
+      <div class="vcard-num">0${i+1} — ${subN} SUB-INDUSTRIES · ${ucN} USE CASES</div>
+      <div class="vcard-lbl">${esc(v.name)}</div>
+      <div class="vcard-sub">${esc(v.sub)}</div></div>`;
+  }).join("");
+}
+
+/* ── sidebar ── */
+function rSB(){
+  const sb=document.getElementById("sb");setHl(sb);
+  let html="";
+  if(VIEW==="industry"){
+    const items=DB.subs.filter(s=>s.v===V);
+    html=`<div class="sb-hdr"><span class="sb-title">Sub-Industries</span><span class="sb-count">${items.length}</span></div>`;
+    html+=items.map(s=>{
+      const n=DB.ucs.filter(u=>u.subs.includes(s.id)).length;
+      return`<button class="ibt ${I===s.id?"on":""}" data-act="sel" data-id="${s.id}">
+        <span class="idot"></span><span class="ibt-name">${esc(s.name)}</span>
+        <span class="ibadge ${n?"bg-gray":"bg-coral"}">${n} UC${n===1?"":"s"}</span></button>`;
+    }).join("");
+  }else if(VIEW==="usecase"){
+    const items=DB.ucs.filter(u=>u.v===V);
+    html=`<div class="sb-hdr"><span class="sb-title">Use Cases</span><span class="sb-count">${items.length}</span></div>`;
+    let lastCat=null;
+    items.forEach(u=>{
+      if(u.cat!==lastCat){html+=`<div class="sb-group t-${catColor[V][u.cat]}">${esc(u.cat)}</div>`;lastCat=u.cat;}
+      html+=`<button class="ibt ${I===u.id?"on":""}" data-act="sel" data-id="${u.id}">
+        <span class="idot"></span><span class="ibt-name">${esc(u.name)}</span>
+        ${u.prio?`<span class="ibadge ${u.prio==="Primary"?"bg-green":"bg-amber"}">${u.prio}</span>`:""}</button>`;
+    });
+  }else{
+    const items=prodsByV[V].filter(rgVisible);
+    html=`<div class="sb-hdr"><span class="sb-title">Products</span><span class="sb-count">${items.length}</span></div>`;
+    let lastG=null;
+    items.forEach(p=>{
+      if(p.g!==lastG){html+=`<div class="sb-group">${esc(p.g)}</div>`;lastG=p.g;}
+      html+=`<button class="ibt ${I===p.key?"on":""}" data-act="sel" data-id="${esc(p.key)}">
+        <span class="idot"></span><span class="ibt-name">${esc(p.n)}</span>${rgTags(p)}</button>`;
+    });
+    if(!items.length)html+=`<div class="nores" style="padding:16px">No products for this region</div>`;
+  }
+  sb.innerHTML=html;
+}
+
+/* ── product chips grouped by family ── */
+function prodGrid(prods){
+  const vis=prods.filter(rgVisible);
+  if(!vis.length)return`<div class="nores">No mapped products${R!=="Both"?" for "+R:""}</div>`;
+  const fams=FAMORDER.filter(f=>vis.some(p=>p.g===f));
+  return`<div class="pgrid">${fams.map(f=>`
+    <div class="prow"><div class="pfam">${esc(f)}</div><div class="pchips">${
+      vis.filter(p=>p.g===f).map(p=>`<span class="pchip" data-act="prod" data-id="${esc(p.g+"|"+p.n)}" title="View product">${esc(p.n)}${rgTags(p)}</span>`).join("")
+    }</div></div>`).join("")}</div>`;
+}
+
+/* ── detail ── */
+function rDet(){
+  const d=document.getElementById("det");setHl(d);
+  if(!I){
+    d.innerHTML=`<div class="empty-st"><div class="empty-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00a376" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>
+    <p style="font-size:13px;max-width:260px;line-height:1.6">Pick a ${VIEW==="industry"?"sub-industry":VIEW==="usecase"?"use case":"product"} from the left to see its full mapping</p></div>`;return;
+  }
+  if(VIEW==="industry")rDetSub(d);
+  else if(VIEW==="usecase")rDetUC(d);
+  else rDetProd(d);
+}
+
+function rDetSub(d){
+  const s=subById[I];if(!s){d.innerHTML="";return}
+  const vert=DB.verticals.find(v=>v.id===V);
+  const ucs=DB.ucs.filter(u=>u.subs.includes(s.id));
+  const prodSet={};ucs.forEach(u=>u.prods.filter(rgVisible).forEach(p=>prodSet[p.g+"|"+p.n]=1));
+  const tabs=`<div class="tab-bar"><button class="tab-btn ${T==="chain"?"on":""}" data-act="tab" data-id="chain">Use cases &amp; products</button><button class="tab-btn ${T==="matrix"?"on":""}" data-act="tab" data-id="matrix">Matrix</button></div>`;
+  let body="";
+  if(!ucs.length){
+    body=`<div class="nores">No use cases mapped to this sub-industry yet.</div>`;
+  }else if(T==="chain"){
+    const cats=[...new Set(ucs.map(u=>u.cat))];
+    body=`<div class="chain">${cats.map(c=>{
+      const list=ucs.filter(u=>u.cat===c);
+      return`<div class="csec"><div class="chdr"><span class="chlbl t-${catColor[V][c]}">${esc(c)}</span><span class="chcnt">${list.length} use case${list.length!==1?"s":""}</span></div>
+      <div class="uclist">${list.map(u=>`
+        <div class="uc-card"><div class="uc-top">
+          <span class="uc-name" data-act="uc" data-id="${u.id}">${esc(u.name)}</span>
+          ${u.prio?`<span class="ibadge ${u.prio==="Primary"?"bg-green":"bg-amber"}">${u.prio}</span>`:""}
+        </div>
+        ${u.desc?`<div class="uc-desc">${esc(u.desc)}</div>`:""}
+        ${prodGrid(u.prods)}</div>`).join("")}</div></div>`;
+    }).join("")}</div>`;
+  }else{
+    body=mxSub(s,ucs);
+  }
+  d.innerHTML=`<div class="det-eyebrow c-${col()}">${esc(vert.name)} · Sub-Industry</div>
+    <div class="det-name">${esc(s.name)}</div>
+    ${s.desc?`<div class="det-desc">${esc(s.desc)}</div>`:""}
+    <div class="metarow">
+      ${s.ex?`<span class="mbadge bg-gray">e.g. ${esc(s.ex)}</span>`:""}
+      <span class="mbadge bg-${col()}">${ucs.length} use case${ucs.length!==1?"s":""}</span>
+      <span class="mbadge bg-gray">${Object.keys(prodSet).length} product${Object.keys(prodSet).length!==1?"s":""}${R!=="Both"?" · "+R:""}</span>
+    </div>${tabs}${body}`;
+}
+
+function mxSub(s,ucs){
+  const pm={};
+  ucs.forEach(u=>u.prods.filter(rgVisible).forEach(p=>{pm[p.g+"|"+p.n]=p}));
+  const cols=Object.values(pm).sort((a,b)=>FAMORDER.indexOf(a.g)-FAMORDER.indexOf(b.g)||a.n.localeCompare(b.n));
+  if(!cols.length)return`<div class="nores">No products to display${R!=="Both"?" for "+R:""}</div>`;
+  const th=`<tr><th class="rh">Use case</th>${cols.map(c=>`<th title="${esc(c.g)}">${esc(c.n)}</th>`).join("")}</tr>`;
+  const tb=ucs.map(u=>{
+    const m={};u.prods.forEach(p=>m[p.g+"|"+p.n]=p);
+    return`<tr><td class="rh">${esc(u.name)}</td>${cols.map(c=>{
+      const p=m[c.key||c.g+"|"+c.n];
+      if(!p||!rgVisible(p))return`<td><span class="me">·</span></td>`;
+      const regs=["UAE","KSA"].filter(r=>p.rg[r]&&(R==="Both"||R===r));
+      return`<td>${regs.map(r=>`<span class="${p.rg[r]===2?"mna":"mh"}" title="${p.rg[r]===2?"Not currently available in "+r:r}">${r}</span>`).join(" ")}</td>`;
+    }).join("")}</tr>`;
+  }).join("");
+  return`<div class="mx-wrap"><table class="mx"><thead>${th}</thead><tbody>${tb}</tbody></table></div>`;
+}
+
+function rDetUC(d){
+  const u=ucById[I];if(!u){d.innerHTML="";return}
+  const vert=DB.verticals.find(v=>v.id===V);
+  const subs=u.subs.map(id=>subById[id]).filter(Boolean);
+  d.innerHTML=`<div class="det-eyebrow c-${col()}">${esc(vert.name)} · Use Case</div>
+    <div class="det-name">${esc(u.name)}</div>
+    ${u.desc?`<div class="det-desc">${esc(u.desc)}</div>`:""}
+    <div class="metarow">
+      <span class="mbadge bg-${catColor[V][u.cat]}">${esc(u.cat)}</span>
+      ${u.prio?`<span class="mbadge ${u.prio==="Primary"?"bg-green":"bg-amber"}">${u.prio}</span>`:""}
+    </div>
+    <div class="chain">
+      <div class="csec"><div class="chdr"><span class="chlbl t-${col()}">Sub-industries with this use case</span><span class="chcnt">${subs.length}</span></div>
+        <div class="citems">${subs.length?subs.map(s=>`<span class="ctag bg-${col()}" data-act="sub" data-id="${s.id}">${esc(s.name)}</span>`).join(""):`<span class="nores">Not mapped to any sub-industry yet</span>`}</div></div>
+      <div class="csec"><div class="chdr"><span class="chlbl t-purple">Products that deliver this</span></div>
+        <div style="padding:12px">${prodGrid(u.prods)}</div></div>
+    </div>`;
+}
+
+function rDetProd(d){
+  const p=prodsByV[V].find(x=>x.key===I);if(!p){d.innerHTML="";return}
+  const vert=DB.verticals.find(v=>v.id===V);
+  const ucs=DB.ucs.filter(u=>u.v===V&&u.prods.some(x=>x.g===p.g&&x.n===p.n&&rgVisible(x)));
+  const subSet={};ucs.forEach(u=>u.subs.forEach(s=>subSet[s]=1));
+  const subs=Object.keys(subSet).map(id=>subById[id]).filter(Boolean);
+  d.innerHTML=`<div class="det-eyebrow c-${col()}">${esc(vert.name)} · Product</div>
+    <div class="det-name">${esc(p.n)}</div>
+    <div class="metarow"><span class="mbadge bg-purple">${esc(p.g)}</span>
+      ${["UAE","KSA"].filter(r=>p.rg[r]).map(r=>`<span class="mbadge ${p.rg[r]===2?"bg-coral":r==="UAE"?"bg-blue":"bg-amber"}">${r}${p.rg[r]===2?" — not yet available":""}</span>`).join("")}
+    </div>
+    <div class="chain">
+      <div class="csec"><div class="chdr"><span class="chlbl t-coral">Use cases served</span><span class="chcnt">${ucs.length}</span></div>
+        <div class="citems">${ucs.length?ucs.map(u=>`<span class="ctag bg-coral" data-act="uc" data-id="${u.id}">${esc(u.name)}<span class="ctag-dep">${esc(u.cat)}</span></span>`).join(""):`<span class="nores">None${R!=="Both"?" for "+R:""}</span>`}</div></div>
+      <div class="csec"><div class="chdr"><span class="chlbl t-${col()}">Sub-industries reached</span><span class="chcnt">${subs.length}</span></div>
+        <div class="citems">${subs.length?subs.map(s=>`<span class="ctag bg-${col()}" data-act="sub" data-id="${s.id}">${esc(s.name)}</span>`).join(""):`<span class="nores">None</span>`}</div></div>
+    </div>`;
+}
+
+/* ── events ── */
+function render(){rVsec();rSB();rDet();
+  document.querySelectorAll("#viewtoggle .rbtn").forEach(b=>b.classList.toggle("on",b.dataset.view===VIEW));
+  document.querySelectorAll(".hdr .rbtn").forEach(b=>b.classList.toggle("on",b.dataset.r===R));
+}
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-act],[data-r],[data-view]");if(!t)return;
+  if(t.dataset.r){R=t.dataset.r;render();return}
+  if(t.dataset.view){VIEW=t.dataset.view;I=null;T="chain";render();return}
+  const act=t.dataset.act,id=t.dataset.id;
+  if(act==="vert"){V=t.dataset.v;I=null;T="chain";render()}
+  else if(act==="sel"){I=id;T="chain";rSB();rDet()}
+  else if(act==="tab"){T=id;rDet()}
+  else if(act==="sub"){VIEW="industry";I=id;T="chain";render()}
+  else if(act==="uc"){VIEW="usecase";I=id;render()}
+  else if(act==="prod"){VIEW="product";I=id;render()}
+});
+render();
+</script>
+</body>
+</html>
